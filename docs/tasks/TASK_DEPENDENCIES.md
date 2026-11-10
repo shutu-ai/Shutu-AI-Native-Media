@@ -39,7 +39,7 @@
 | M0-T2 | 官方 Sample 构建/注册/卸载 | M0-T1 | TASK_DEP | build.log, device-enumeration.txt, screenshots, test-results.json, licensing-sbom.json | 主力开发机 |
 | M0-T3 | 双应用消费验证 | M0-T2 | TASK_DEP | device-enumeration.txt, screenshots, test-results.json | 主力开发机 |
 | M0-T4 | Frame Server 约束 + IPC 身份 PoC + R-02 决策 | M0-T2 | TASK_DEP | environment.json(补), screenshots, security-checklist.md, test-results.json, decision.md | 主力开发机 |
-| M0-T5 | SysVAD 风险书面评估 | — | **AUTH** | decision.md, licensing-sbom.json | 书面研究（无环境操作） |
+| M0-T5 | SysVAD 风险书面评估 | — | TASK_DEP | decision.md, licensing-sbom.json | 书面研究（无环境操作；升级为构建/安装时须 AUTH） |
 | M0-T6 | contracts 骨架 + 证据设施 | M0-T1 | TASK_DEP | test-results.json, build.log | 主力开发机 |
 | M0-T7 | **G0 Gate 汇总** | M0-T3, M0-T4, M0-T5, M0-T6 | TASK_DEP | 全套九文件 | 主力开发机 |
 

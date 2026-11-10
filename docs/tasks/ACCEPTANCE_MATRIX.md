@@ -11,7 +11,7 @@
 | FR-001 | 虚拟摄像头注册/枚举/启停 | M0-T2·真机；M0-T3·真机 | M1-T5·真机；M1-T6·真机 | — | — | — | M5-T2·真机；M5-T4·真机 | 真机 | device-enumeration.txt、screenshots/、test-results.json | Windows Camera、Chromium、OBS |
 | FR-002 | 虚拟麦克风受控验证（Track B 另设门禁） | M0-T5·书面 | — | M2-T3·真机(Track A)；M2-T6·隔离测试机(AUTH) | — | — | M5-T4·真机；M5-T6·决策 | 真机（Track A 明确标注非自研驱动） | device-enumeration.txt、perf.json、screenshots/ | 录音工具、浏览器音频页、会议软件（按实测） |
 | FR-003 | 两设备读统一 Runtime 输出、独立启停 | — | M1-T6·真机 | M2-T4·真机 | — | M4-T5·Mock素材+真机输出 | — | 真机 | perf.json、test-results.json、screenshots/ | Windows Camera + 第二应用 |
-| FR-004 | 旁路/无AI/单AI/多AI 四模式 | — | M1-T2·CI（旁路雏形） | — | M3-T1·真机(单)；M3-T5·真机(替换)；M3-T8·真机(多链) | M4-T2·真机(理解)；M4-T3·真机(生成)；M4-T5·Mock素材(端到端) | — | 真机 + Mock 素材边界标注 | test-results.json、perf.json | 同上 |
+| FR-004 | 旁路/无AI/单AI/多AI 四模式 | — | M1-T2·CI（旁路雏形） | — | M3-T1·真机(单)；M3-T5·真机输出(Mock合成音替身)；M3-T8·真机(多链) | M4-T2·真机(理解)；M4-T3·真机输出(预录/合成帧替身)；M4-T5·Mock素材(端到端) | — | 真机 + Mock 素材边界标注 | test-results.json、perf.json | 同上 |
 | FR-005 | 物理摄像头/麦克风采集 + 授权控制 | — | M1-T7·真机 | M2-T2·真机 | — | — | — | 真机 | environment.json、perf.json、screenshots/ | 系统隐私面板 + 应用 |
 | FR-006 | 格式协商、时间戳、缓冲边界、降级、指标 | M0-T6·CI(证据设施) | M1-T2·CI；M1-T3·CI | M2-T1·CI；M2-T4·真机 | M3-T3·CI | — | M5-T5·真机 | CI + 真机混合（逐格标注） | test-results.json、perf.json | — |
 | FR-007 | 模型故障不拖垮设备与非 AI 通路 | — | M1-T6·真机(Runtime kill 预演) | — | M3-T7·真机(NFR-06 正式) | — | M5-T5·真机(复测) | 真机 | perf.json、故障注入日志 | 设备持续注册 + 应用表现 |

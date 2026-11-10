@@ -13,7 +13,7 @@
 | M0-T2 | 官方 VirtualCamera Sample 构建、注册、枚举、卸载 | M0-T1 | — | 未开始 |
 | M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 未开始 |
 | M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 未开始 |
-| M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | **AUTH_REQUIRED** | 未开始 |
+| M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | —（升级为构建/安装任务时须另行授权） | 未开始 |
 | M0-T6 | `contracts/` 骨架 + 证据基线设施 + `docs/adr/` 约定 | M0-T1 | — | 未开始 |
 | M0-T7 | **G0 Gate 汇总**：证据组装 + GO/HOLD/STOP 判定 | M0-T3, M0-T4, M0-T5, M0-T6 | — | 未开始 |
 
@@ -202,7 +202,7 @@ M0-T2（Sample 已在运行）。
 
 ---
 
-## M0-T5 · SysVAD 风险书面评估（AUTH_REQUIRED，不构建不安装）
+## M0-T5 · SysVAD 风险书面评估（不构建不安装）
 
 **1. Task ID 与目标**
 纯书面研究并输出风险结论：SysVAD 构建条件（WDK 版本矩阵）、驱动签名路径与成本（attestation / HLK / 测试签名）、隔离测试机要求、许可与分发条款。**本任务禁止构建或安装任何驱动**；输出第二台隔离测试机策略与 Track B 启动条件。
@@ -232,7 +232,7 @@ M0-T2（Sample 已在运行）。
 - 不适用（本任务**禁止**真实驱动操作）。任务完成的标志是文档完整，而非任何驱动行为。
 
 **8. 完成标准（DoD）**
-- decision.md 完成；`AUTH_REQUIRED` 状态保持 PENDING——未获用户明确授权前，SysVAD 相关任何构建/安装任务不得启动。
+- decision.md 完成；本任务为纯书面研究、无需授权，但 SysVAD 相关任何构建/安装任务启动前必须另行登记 AUTH_REQUIRED 并获用户显式授权（PENDING 不得启动）。
 
 **9. 风险及失败处理**
 - 低估签名/HLK 成本 → 所有成本结论标注待确认；G2 复评（M2-T6）。
@@ -241,7 +241,7 @@ M0-T2（Sample 已在运行）。
 **10. 应保留的测试证据**
 `decision.md`（含引用清单）、`licensing-sbom.json`（SysVAD、WDK、Track A 候选工具条目）。
 
-**11. 状态**：未开始（AUTH_REQUIRED · PENDING）
+**11. 状态**：未开始
 
 ---
 

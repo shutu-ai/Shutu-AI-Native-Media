@@ -9,10 +9,10 @@
 
 | ID | 目标摘要 | 前置依赖 | AUTH | 状态 |
 |---|---|---|---|---|
-| M6-T1 | OS Adapter 契约评审 v1（无 Windows 私有句柄泄漏） | G5=GO | — | 未开始 |
-| M6-T2 | Linux PipeWire 虚拟摄像头/音频 spike | M6-T1 | — | 未开始 |
-| M6-T3 | macOS CoreMediaIO / Core Audio spike | M6-T1 | — | 未开始 |
-| M6-T4 | LiveKit/WebRTC 消费者 spike | M6-T1 | — | 未开始 |
+| M6-T1 | OS Adapter 契约评审 v1（无 Windows 私有句柄泄漏） | G5=GO + 用户批准 | — | 未开始 |
+| M6-T2 | Linux PipeWire 虚拟摄像头/音频 spike | M6-T1 + 用户批准 | — | 未开始 |
+| M6-T3 | macOS CoreMediaIO / Core Audio spike | M6-T1 + 用户批准 | — | 未开始 |
+| M6-T4 | LiveKit/WebRTC 消费者 spike | M6-T1 + 用户批准 | — | 未开始 |
 | M6-T5 | AI-Native IM 早期集成评估报告 | M6-T2, M6-T3, M6-T4 | — | 未开始 |
 
 ---
