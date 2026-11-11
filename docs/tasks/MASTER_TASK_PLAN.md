@@ -31,7 +31,7 @@ graph LR
 | ID | 任务名称 | 前置依赖 | AUTH | 状态 |
 |---|---|---|---|---|
 | M0-T1 | 环境盘点脚本与工具链补齐 | — | — | 已完成（run G0-20261111-174257-8532） |
-| M0-T2 | 官方 VirtualCamera Sample 构建/注册/卸载 | M0-T1 | — | 未开始 |
+| M0-T2 | 官方 VirtualCamera Sample 构建/注册/卸载 | M0-T1 | — | 已完成（run G0-20261111-182351-1DB8） |
 | M0-T3 | 双独立应用消费与生命周期验证 | M0-T2 | — | 未开始 |
 | M0-T4 | Frame Server 约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 未开始 |
 | M0-T5 | SysVAD 风险书面评估 | — | — | 未开始 |
@@ -82,7 +82,7 @@ graph LR
 | M6-T4 | LiveKit/WebRTC 消费者 spike | M6-T1 + 用户批准 | — | 未开始 |
 | M6-T5 | AI-Native IM 集成评估报告 | M6-T2/T3/T4 | — | 未开始 |
 
-**状态统计**：未开始 50 ｜ 进行中 0 ｜ 已完成 1（M0-T1）｜ BLOCKED（门禁）M1–M6 全部 ｜ AUTH·PENDING（不阻塞主线 Gate）M2-T6、M5-T9——未授权时记 NOT_RUN（ADR-011）。
+**状态统计**：未开始 49 ｜ 进行中 0 ｜ 已完成 2（M0-T1、M0-T2）｜ BLOCKED（门禁）M1–M6 全部 ｜ AUTH·PENDING（不阻塞主线 Gate）M2-T6、M5-T9——未授权时记 NOT_RUN（ADR-011）。
 
 ## 4. 当前环境登记（2026-11-10 规划期探测；2026-11-11 工具链补齐后更新）
 
@@ -148,3 +148,4 @@ ARCHITECTURE_BASELINE.md（唯一事实来源）
 | 2026-11-10 | v1.0 | 初版：50 项任务（M0:7/M1:8/M2:7/M3:9/M4:6/M5:8/M6:5）、G0–G5 门禁体系、验收矩阵、AGENTS.md | 架构基线 v1.0 + 用户任务规划指令 |
 | 2026-11-11 | v1.1 | 验收修复（ADR-011）：M2-T6 改可选+NOT_RUN 不阻塞 G2；六个 Gate 任务 AGGREGATE 化（报告必达）；M5-T3/M5-T9 拆分（任务总数 50→51）；G5 双交付等级 GO(LEVEL=L1/L2)；新增 EVIDENCE_SPEC 证据索引归档规范；新增 SYS_CHANGE 系统状态变更确认机制；环境表补齐 VS 工具链/GStreamer 并记录探测误报修正 | ADR-011 + 用户验收指令（架构基线 v1.0 零改动） |
 | 2026-11-11 | 状态变更 | M0-T1 未开始 → **已完成**（run G0-20261111-174257-8532）：verify-environment v1.0 + schema + 自测 5/5 + 幂等 YES；environment.json 真机生成（Build 26200.9974）；工具链实测落档；WDK 记录不安装原因；docs/platform-windows.md 快照；一致性检查 38/38 | M0_TASKS DoD 四条 + MASTER §6 规则 + EVIDENCE_SPEC |
+| 2026-11-11 | 状态变更 | M0-T2 未开始 → **已完成**（run G0-20261111-182351-1DB8）：官方 Windows-Camera Sample 原样构建（commit 626f8b19，MIT，SBOM 0.2 五新增条目）；3 轮注册→拉流（TestVCam 30 帧校验×3）→Windows Camera 合成画面像素级留证→注销循环全通过，设备实例 ID 逐轮一致；完整回滚（/Uninstall + COM 键删 + 目录删 + Frame Server DLL 缓存处置）终态断言 ABSENT/COM=no；SYS_CHANGE 台账 3 项均经用户确认；偏差（BuildTools 无 VS IDE→MSI 不可构建，README 键 + 官方 Installer 控制台替代）记 run decision.md §3；复现文档 `platforms/windows/virtual-camera/README.md` | M0_TASKS M0-T2 DoD + AGENTS §3 SYS_CHANGE + 基线 §14.1/§14.3（无 ADR 级边界触碰） |

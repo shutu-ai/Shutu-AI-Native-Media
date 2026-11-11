@@ -10,7 +10,7 @@
 | ID | 目标摘要 | 前置依赖 | AUTH | 状态 |
 |---|---|---|---|---|
 | M0-T1 | 环境盘点脚本 + 工具链补齐（VS Build Tools、GStreamer MSVC 版） | — | — | 已完成（run G0-20261111-174257-8532） |
-| M0-T2 | 官方 VirtualCamera Sample 构建、注册、枚举、卸载 | M0-T1 | — | 未开始 |
+| M0-T2 | 官方 VirtualCamera Sample 构建、注册、枚举、卸载 | M0-T1 | — | 已完成（run G0-20261111-182351-1DB8） |
 | M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 未开始 |
 | M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 未开始 |
 | M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | —（升级为构建/安装任务时须另行授权） | 未开始 |
@@ -109,7 +109,7 @@ M0-T1（工具链就绪）。
 **10. 应保留的测试证据**
 `environment.json`、`build.log`、`device-enumeration.txt`、`screenshots/`（Windows Camera 渲染合成画面）、`test-results.json`（启停循环结果）、`licensing-sbom.json`。
 
-**11. 状态**：未开始
+**11. 状态**：已完成（2026-11-11，run `G0-20261111-182351-1DB8`）——3 轮注册/拉流/注销循环全通过；Windows Camera 合成画面像素级留证；完整回滚验证（ABSENT + COM=no + 目录已删）。关键事实与偏差（BuildTools 机器 MSI 不可构建 → README 键 + 官方 Installer 控制台替代）见 run `decision.md`；复现步骤见 `platforms/windows/virtual-camera/README.md`。
 
 ---
 

@@ -14,6 +14,9 @@ target/
 Thumbs.db
 .DS_Store
 
+# third_party 克隆（来源/commit/许可证登记在 SBOM 与 platforms 文档，不 入库上游仓库）
+third_party/Windows-Camera/
+
 # IDE
 .idea/
 .vscode/

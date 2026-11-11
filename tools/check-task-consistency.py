@@ -204,7 +204,7 @@ check("S3-E 编号注记（M5-T9 编号例外）已文档化",
 
 # --- 4. 状态纪律 ---------------------------------------------------------------
 STATE_VOCAB = re.compile(r"^(未开始|进行中|已完成|HOLD|STOP|BLOCKED|NOT_RUN)")
-RUNID_PAT = re.compile(r"G\d-\d{8}-\d{6}-[0-9a-f]{4}")
+RUNID_PAT = re.compile(r"G\d-\d{8}-\d{6}-[0-9a-fA-F]{4}")
 vocab_ok = all(STATE_VOCAB.match(s.strip()) for s in master_status.values())
 done_ids = [k for k, v in master_status.items() if v.strip().startswith("已完成")]
 done_have_run = all(RUNID_PAT.search(master_status[k]) for k in done_ids)

@@ -9,6 +9,7 @@
 | run-id | 日期 | 任务 ID | Gate | 主题 | 证据级别 | git commit | 归档 | 备注 |
 |---|---|---|---|---|---|---|---|---|
 | G0-20261111-174257-8532 | 2026-11-11 | M0-T1 | G0 | 环境盘点脚本 v1.0 首次真机运行 + 工具链实测（VS/GStreamer/Rust/SDK） | 真机 | 21035c8 | 未归档（开发期保留，G0 判定后归档） | M0-T1 判定已完成；screenshots/perf/device-enumeration 不适用（decision.md §5）；unconfirmed：第二隔离测试机 |
+| G0-20261111-182351-1DB8 | 2026-11-11 | M0-T2 | G0 | 官方 VirtualCamera Sample 原样构建 + 注册/拉流/注销 3 轮循环 + Windows Camera 合成画面像素级留证 + 完整回滚 | 真机 | 22397a0 | 未归档（开发期保留，G0 判定后归档） | M0-T2 判定已完成；perf/security-checklist 不适用（decision.md §6）；SYS_CHANGE 3 项（decision.md §4）；SBOM 0.2 五新增条目 |
 
 ## 使用说明
 
@@ -16,3 +17,4 @@
 2. `证据级别` 取值同验收矩阵：`真机` / `CI` / `Mock（标注边界）` / `书面`。
 3. run 含 `media_content=true` 文件时，备注必须写明同意记录与删除期限（≤30 天）。
 4. 含 NOT_RUN 任务的 run，备注列注明 `NOT_RUN:<任务ID>`。
+
