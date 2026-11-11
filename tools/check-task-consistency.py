@@ -203,9 +203,14 @@ check("S3-E 编号注记（M5-T9 编号例外）已文档化",
       "编号注记" in deps_text and "编号注记" in m5_text)
 
 # --- 4. 状态纪律 ---------------------------------------------------------------
-not_started = all(s.strip().startswith("未开始") for s in master_status.values())
-check("STATE-PLANNING 注册表全部状态为未开始（规划期无虚报）", not_started,
-      f"non-fresh: {[k for k, v in master_status.items() if not v.strip().startswith('未开始')]}")
+STATE_VOCAB = re.compile(r"^(未开始|进行中|已完成|HOLD|STOP|BLOCKED|NOT_RUN)")
+RUNID_PAT = re.compile(r"G\d-\d{8}-\d{6}-[0-9a-f]{4}")
+vocab_ok = all(STATE_VOCAB.match(s.strip()) for s in master_status.values())
+done_ids = [k for k, v in master_status.items() if v.strip().startswith("已完成")]
+done_have_run = all(RUNID_PAT.search(master_status[k]) for k in done_ids)
+check("STATE-VOCABULARY 状态词合法且已完成项含 run-id 证据引用", vocab_ok and done_have_run,
+      f"bad vocab: {[k for k, v in master_status.items() if not STATE_VOCAB.match(v.strip())]}, "
+      f"已完成缺 run-id: {[k for k in done_ids if not RUNID_PAT.search(master_status[k])]}")
 
 # --- 5. 证据与 SYS_CHANGE 机制（ADR-011 D5/D6） ---------------------------------
 ev_spec = TASKS / "EVIDENCE_SPEC.md"

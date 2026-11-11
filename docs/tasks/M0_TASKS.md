@@ -9,7 +9,7 @@
 
 | ID | 目标摘要 | 前置依赖 | AUTH | 状态 |
 |---|---|---|---|---|
-| M0-T1 | 环境盘点脚本 + 工具链补齐（VS Build Tools、GStreamer MSVC 版） | — | — | 未开始 |
+| M0-T1 | 环境盘点脚本 + 工具链补齐（VS Build Tools、GStreamer MSVC 版） | — | — | 已完成（run G0-20261111-174257-8532） |
 | M0-T2 | 官方 VirtualCamera Sample 构建、注册、枚举、卸载 | M0-T1 | — | 未开始 |
 | M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 未开始 |
 | M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 未开始 |
@@ -64,7 +64,7 @@
 **10. 应保留的测试证据**
 `artifacts/G0/<run-id>/environment.json`、`build.log`（工具安装与版本命令输出）、`screenshots/`（版本命令截图，脱敏）、`licensing-sbom.json`（VS Build Tools、GStreamer 条目）。
 
-**11. 状态**：未开始
+**11. 状态**：已完成（run-id G0-20261111-174257-8532；2026-11-11——DoD 四条达成：脚本+自测 5/5、environment.json schema VALID/幂等 YES、工具链已补齐且 WDK 记录不安装原因、platform-windows.md 快照落档）
 
 ---
 

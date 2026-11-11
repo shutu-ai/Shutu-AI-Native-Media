@@ -8,7 +8,7 @@
 
 | run-id | 日期 | 任务 ID | Gate | 主题 | 证据级别 | git commit | 归档 | 备注 |
 |---|---|---|---|---|---|---|---|---|
-| （暂无——首个 run 由 M0-T1 产生） | | | | | | | | |
+| G0-20261111-174257-8532 | 2026-11-11 | M0-T1 | G0 | 环境盘点脚本 v1.0 首次真机运行 + 工具链实测（VS/GStreamer/Rust/SDK） | 真机 | 21035c8 | 未归档（开发期保留，G0 判定后归档） | M0-T1 判定已完成；screenshots/perf/device-enumeration 不适用（decision.md §5）；unconfirmed：第二隔离测试机 |
 
 ## 使用说明
 
