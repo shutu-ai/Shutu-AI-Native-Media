@@ -241,7 +241,7 @@ M0-T2（Sample 已在运行）。
 **10. 应保留的测试证据**
 `decision.md`（含引用清单）、`licensing-sbom.json`（SysVAD、WDK、Track A 候选工具条目）。
 
-**11. 状态**：未开始
+**11. 状态**：已完成（run G0-20261111-212232-D720，2026-11-11）——纯书面研究，六步全部完成，无任何构建/安装/系统变更；产出 run `decision.md`（六步结论 + 官方引用清单，访问日期 2026-11-11）+ run `licensing-sbom.json` 0.3（6 条 research-only 条目：SysVAD/WDK/EWDK/VB-Cable/VoiceMeeter/VAC）+ `docs/platform-windows.md` §6（音频栈/构建矩阵/签名四路径/硬边界）+ `docs/licensing.md` v0.1；关键结论：SysVAD main 需 v142 工具集（本机无，缺口书面确认）、原样 sample 不可过 HLK、本机永不执行测试签名、测试机 unconfirmed ⇒ Track B HOLD（复评触发三条件已登记）、Track A 三候选许可/分发完成（不默认随产品捆绑）；未实测判断已标「待实测确认」；SysVAD 任何构建/安装启动前须另行 AUTH_REQUIRED
 
 ---
 

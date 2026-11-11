@@ -10,6 +10,7 @@
 |---|---|---|---|---|---|---|---|---|
 | G0-20261111-174257-8532 | 2026-11-11 | M0-T1 | G0 | 环境盘点脚本 v1.0 首次真机运行 + 工具链实测（VS/GStreamer/Rust/SDK） | 真机 | 21035c8 | 未归档（开发期保留，G0 判定后归档） | M0-T1 判定已完成；screenshots/perf/device-enumeration 不适用（decision.md §5）；unconfirmed：第二隔离测试机 |
 | G0-20261111-182351-1DB8 | 2026-11-11 | M0-T2 | G0 | 官方 VirtualCamera Sample 原样构建 + 注册/拉流/注销 3 轮循环 + Windows Camera 合成画面像素级留证 + 完整回滚 | 真机 | 22397a0 | 未归档（开发期保留，G0 判定后归档） | M0-T2 判定已完成；perf/security-checklist 不适用（decision.md §6）；SYS_CHANGE 3 项（decision.md §4）；SBOM 0.2 五新增条目 |
+| G0-20261111-212232-D720 | 2026-11-11 | M0-T5 | G0 | SysVAD 书面风险评估：WDK/EWDK 版本矩阵 + 签名四路径成本 + 隔离测试机策略（Track B HOLD）+ Track A 三候选许可/分发（不默认随产品捆绑） | 书面 | 377e5d5 | 未归档（开发期保留，G0 判定后归档） | M0-T5 判定已完成；纯书面 run：build/test/perf/device-enumeration/screenshots 不适用（decision.md §10）；system_changes=[]；SBOM 0.3 六条 research-only；测试机 unconfirmed 保持 |
 
 ## 使用说明
 
