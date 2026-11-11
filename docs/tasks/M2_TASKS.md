@@ -1,5 +1,6 @@
 # M2 任务明细 — 统一音视频会话与音频验证（Gate G2）
 
+> **修订 v1.1**（2026-11-11，ADR-011）：M2-T6 为**可选 PoC**——未授权/无隔离测试机时记 `NOT_RUN`（合法终态），不阻塞 G2；M2-T7 为 AGGREGATE 汇总（报告必达）。Track B 产品化由 M5-T6/M5-T9 独立门禁把守。
 > **来源**：`docs/ARCHITECTURE_BASELINE.md` §9 M2（架构基线 v1.0）。
 > **门禁前置**：G1 = GO（否则本里程碑全部任务 BLOCKED）。
 > **G2 验收原文**（§9）：音频及视频在同一 Session 可运作；音频桥接清楚标识非自研驱动；同步与恢复指标有证据；SysVAD PoC 给出 GO / HOLD / STOP 结论。
@@ -14,8 +15,8 @@
 | M2-T3 | Track A 音频桥接 + 第三方录音应用读取 + NFR-02 | M2-T2 | — | 未开始 |
 | M2-T4 | 音视频同一 Session 联合运行 + 同步测量（NFR-04/05） | M2-T3 | — | 未开始 |
 | M2-T5 | 鲁棒性：启停/SRC/热插拔/休眠唤醒/权限撤销（NFR-08 初版） | M2-T4 | — | 未开始 |
-| M2-T6 | SysVAD Track B PoC（隔离测试机） | M0-T5 | **AUTH_REQUIRED** | 未开始（PENDING） |
-| M2-T7 | **G2 Gate 汇总** + Track B GO/HOLD/STOP | M2-T4, M2-T5, M2-T6 | — | 未开始 |
+| M2-T6 | SysVAD Track B PoC（隔离测试机，**可选**） | M0-T5 | **AUTH_REQUIRED**（可选；未授权 ⇒ NOT_RUN） | 未开始（PENDING；未授权时记 NOT_RUN） |
+| M2-T7 | **G2 Gate 汇总** + Track B 显式结论（GO/HOLD/STOP/NOT_RUN） | M2-T4, M2-T5；M2-T6 终态（AGG，含 NOT_RUN） | — | 未开始 |
 
 ---
 
@@ -242,6 +243,7 @@ M2-T4。
 
 **3. 前置依赖**
 M0-T5（风险书面评估完成）；**用户显式授权（AUTH_REQUIRED · 当前 PENDING）**；隔离测试机到位。
+**本任务为可选 PoC（ADR-011 D1）**：授权未取得或测试机未到位时，任务记 `NOT_RUN`（合法终态，≠ 失败），主线（Track A / G2）不受影响。
 
 **4. 允许修改的模块与文件范围**
 - 新建：`platforms/windows/virtual-mic-driver/`（独立隔离研发；与主线代码零共享构建）
@@ -268,26 +270,26 @@ M0-T5（风险书面评估完成）；**用户显式授权（AUTH_REQUIRED · �
 
 **9. 风险及失败处理**
 - 构建/签名失败 → 如实记录，Track B 建议 HOLD；不得为让样例跑通而降低安全基线。
-- 测试机不可用/授权未取得 → 任务保持 PENDING，主线不受影响（解耦要求）。
+- 测试机不可用/授权未取得 → 任务记 `NOT_RUN`（decision.md 记录原因与复评触发条件），主线不受影响（解耦要求，ADR-011 D1）。
 - 驱动导致测试机蓝屏/不稳定 → 有还原点/镜像恢复流程（进入测试机前必须先建）；如实记录。
 
 **10. 应保留的测试证据**
 `environment.json`（测试机）、`build.log`、`device-enumeration.txt`（音频端点）、`screenshots/`、安装/恢复安全设置前后快照、`decision.md`（Track B 部分）、`licensing-sbom.json`（SysVAD/WDK）。
 
-**11. 状态**：未开始（AUTH_REQUIRED · PENDING —— 未获授权与测试机前不得启动）
+**11. 状态**：未开始（AUTH_REQUIRED · PENDING —— 未获授权与测试机前不得启动；届时记 `NOT_RUN`，不阻塞 G2）
 
 ---
 
 ## M2-T7 · G2 Gate 汇总（GO / HOLD / STOP）
 
 **1. Task ID 与目标**
-验收 G2：音频及视频在同一 Session 可运作；音频桥接清楚标识非自研驱动；同步与恢复指标有证据；SysVAD PoC 给出 GO/HOLD/STOP。按 §14.2 出 `GATE=G2` 判定并经用户确认。
+验收 G2：音频及视频在同一 Session 可运作；音频桥接清楚标识非自研驱动；同步与恢复指标有证据；SysVAD PoC 给出显式结论。按 §14.2 出 `GATE=G2` 判定并经用户确认。**本任务为 AGGREGATE 汇总（ADR-011 D2）：上游到达任意终态即可执行，必须产出报告；`STATUS=GO ⇔ 全部强制条件通过`。GO 不断言 Track B 可生产化（产品化由 M5-T6/M5-T9 独立门禁把守）。**
 
 **2. 对应需求 FR / 架构 ADR**
-- FR-002、FR-003、FR-004、FR-006；ADR-004、ADR-005、ADR-010；基线 §9 Gate G2、§14.2、§12 R-01。
+- FR-002、FR-003、FR-004、FR-006；ADR-004、ADR-005、ADR-010、ADR-011；基线 §9 Gate G2、§14.2、§12 R-01。
 
 **3. 前置依赖**
-M2-T4、M2-T5 完成；M2-T6 有结论（GO/HOLD/STOP 或授权未启用的显式记录）。
+M2-T4、M2-T5 到达终态；M2-T6 到达任意终态（GO/HOLD/STOP/**NOT_RUN**——AGG 语义）。**上游失败/阻塞时本任务照常产出 HOLD/STOP 报告，不得以「上游未完成」为由不出报告。**
 
 **4. 允许修改的模块与文件范围**
 - 生成：`artifacts/G2/<final-run-id>/`（全套 + trackB 子目录）
@@ -297,7 +299,7 @@ M2-T4、M2-T5 完成；M2-T6 有结论（GO/HOLD/STOP 或授权未启用的显�
 1. 汇总 M2-T1~T6 证据；重跑自动化套件全绿。
 2. 逐句自检 G2 验收原文；特别核对「音频桥接清楚标识非自研驱动」在文档/证据中的表述。
 3. 复核同步（NFR-04/05）与恢复指标证据链完整。
-4. 处理 Track B 结论：GO → M5 规划双设备路径；HOLD → 记录触发条件与复评点；STOP → 音频长期走受限形态（M5-T6 决策输入）。
+4. 处理 Track B 结论（显式记录，四选一）：GO → M5 规划双设备路径（M5-T9 签名执行触发条件成立）；HOLD → 记录触发条件与复评点；STOP → 音频长期走受限形态（M5-T6 决策输入）；**NOT_RUN → 在 §14.2 报告 KNOWN_ISSUES 注明「未授权/无测试机，未执行」与复评触发条件**。
 5. §14.2 十字段 → 用户确认。
 
 **6. 自动化测试要求**

@@ -17,7 +17,7 @@
 | M3-T6 | 双 Provider A/B 对比 harness（NFR-10，不改 Device Bridge） | M3-T4 | — | 未开始 |
 | M3-T7 | 故障注入 + AI 授权撤销 + 安全测试（NFR-06/07/08） | M3-T5, M3-T6 | — | 未开始 |
 | M3-T8 | 多 AI 节点串联模式验证（旁路→单节点→多节点，FR-004） | M3-T1, M3-T2, M3-T3 | — | 未开始 |
-| M3-T9 | **G3 Gate 汇总**（AI 开关与 A/B 切换 + 非 AI 基线复测） | M3-T7, M3-T8 | — | 未开始 |
+| M3-T9 | **G3 Gate 汇总**（AI 开关与 A/B 切换 + 非 AI 基线复测；AGG） | M3-T7, M3-T8 终态（AGG） | — | 未开始 |
 
 ---
 
@@ -368,7 +368,7 @@ M3-T1、M3-T2、M3-T3。
 - FR-004、FR-007、FR-009；ADR-007、ADR-010；基线 §9 Gate G3、§14.2。
 
 **3. 前置依赖**
-M3-T7、M3-T8 完成。
+M3-T7、M3-T8 到达**任意终态**（已完成 / HOLD / STOP / BLOCKED / NOT_RUN——AGGREGATE 语义，ADR-011 D2）。上游失败/阻塞时本任务照常产出 HOLD/STOP 报告；`STATUS=GO` 仍要求全部强制条件通过。
 
 **4. 允许修改的模块与文件范围**
 - 生成：`artifacts/G3/<final-run-id>/`

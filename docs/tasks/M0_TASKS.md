@@ -15,7 +15,7 @@
 | M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 未开始 |
 | M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | —（升级为构建/安装任务时须另行授权） | 未开始 |
 | M0-T6 | `contracts/` 骨架 + 证据基线设施 + `docs/adr/` 约定 | M0-T1 | — | 未开始 |
-| M0-T7 | **G0 Gate 汇总**：证据组装 + GO/HOLD/STOP 判定 | M0-T3, M0-T4, M0-T5, M0-T6 | — | 未开始 |
+| M0-T7 | **G0 Gate 汇总**：证据组装 + GO/HOLD/STOP 判定（AGG） | M0-T3~T6 终态（AGG） | — | 未开始 |
 
 ---
 
@@ -297,7 +297,7 @@ M0-T1（脚本运行时环境）。
 - ADR-009（首个里程碑必须验证 OS 识别并消费设备）、ADR-010（证据化验收）；基线 §9 Gate G0、§14.2。
 
 **3. 前置依赖**
-M0-T3、M0-T4、M0-T5、M0-T6（全部完成或有明确的 HOLD 结论）。
+M0-T3、M0-T4、M0-T5、M0-T6 到达**任意终态**（已完成 / HOLD / STOP / BLOCKED / NOT_RUN——AGGREGATE 语义，ADR-011 D2）。上游失败/阻塞时本任务照常产出 HOLD/STOP 报告；`STATUS=GO` 仍要求全部强制条件通过。
 
 **4. 允许修改的模块与文件范围**
 - 生成：`artifacts/G0/<final-run-id>/`（全套）

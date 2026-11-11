@@ -16,7 +16,7 @@
 | M1-T5 | VirtualCamera MediaSource 改为 IPC ring 读帧 | M0-T4, M1-T3, M1-T4 | — | 未开始 |
 | M1-T6 | 端到端验证 + 多消费者/用户切换/重复安装卸载 | M1-T2, M1-T3, M1-T4, M1-T5 | — | 未开始 |
 | M1-T7 | 物理摄像头输入接入（权限、防争抢） | M1-T6 | — | 未开始 |
-| M1-T8 | **G1 Gate 汇总**（30min、kill 备用画面、NFR-01/03/07 初步） | M1-T6, M1-T7 | — | 未开始 |
+| M1-T8 | **G1 Gate 汇总**（30min、kill 备用画面、NFR-01/03/07 初步；AGG） | M1-T6, M1-T7 终态（AGG） | — | 未开始 |
 
 ---
 
@@ -328,7 +328,7 @@ M1-T6（端到端链路稳定）。
 - FR-001、FR-003、FR-006、FR-007、FR-008；ADR-003、ADR-005、ADR-006、ADR-010；基线 §9 Gate G1、§7 NFR-01/NFR-07、§14.2。
 
 **3. 前置依赖**
-M1-T6、M1-T7（T7 允许以 HOLD 结论带入，但须显式记录）。
+M1-T6、M1-T7 到达**任意终态**（已完成 / HOLD / STOP / BLOCKED / NOT_RUN——AGGREGATE 语义，ADR-011 D2；T7 的非完成结论须显式记录）。上游失败/阻塞时本任务照常产出 HOLD/STOP 报告；`STATUS=GO` 仍要求全部强制条件通过。
 
 **4. 允许修改的模块与文件范围**
 - 生成：`artifacts/G1/<final-run-id>/`（全套九文件）

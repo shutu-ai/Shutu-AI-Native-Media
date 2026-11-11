@@ -1,7 +1,10 @@
 # 验收矩阵（FR / NFR / 风险 / 发布清单 × 任务 × 证据）
 
+> **版本**：v1.1（2026-11-11，依据 ADR-011：交付分级 L1/L2、可选任务 NOT_RUN）。
 > **来源**：`docs/ARCHITECTURE_BASELINE.md` §1.2（FR）、§7（NFR）、§12（风险）、§15（发布清单）。
 > **证据级别取值**：`真机` = 真实 Windows（或对应平台）设备 + 真实应用验证；`CI` = 自动化测试通过；`Mock` = mock/替身素材（标注具体边界）。**无真机证据的单元格强制标注 MOCK**——基线 §10.3：「绝不将『代码通过 CI』误报为『Windows 虚拟设备已在真实应用验证』」。
+> **NOT_RUN 取值**：可选任务（如 M2-T6、M5-T9）未授权/未触发时记 `NOT_RUN`（ADR-011 D1）——本矩阵对应单元格保留任务 ID 并标注 NOT_RUN，不得删除行或改判为「已验证」。
+> **G5 判定分级**：`GO(LEVEL=L1)` = Camera-only 受限交付（§15.1 全过 + §15.2 中 `L1+L2` 行全过）；`GO(LEVEL=L2)` = 完整双设备 Beta（§15.1 + §15.2 全部通过）。L2-only 行未满足 ⇒ 最高只能判 L1 且必须明示差距（ADR-011 D4）。
 > **单元格格式**：`任务ID · 级别`。`—` = 该 Gate 不覆盖此项。
 
 ## 1. 功能需求 FR-001 ~ FR-009
@@ -9,7 +12,7 @@
 | 编号 | 摘要 | G0 | G1 | G2 | G3 | G4 | G5 | 证据级别 | 证据文件 | 验证应用 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | FR-001 | 虚拟摄像头注册/枚举/启停 | M0-T2·真机；M0-T3·真机 | M1-T5·真机；M1-T6·真机 | — | — | — | M5-T2·真机；M5-T4·真机 | 真机 | device-enumeration.txt、screenshots/、test-results.json | Windows Camera、Chromium、OBS |
-| FR-002 | 虚拟麦克风受控验证（Track B 另设门禁） | M0-T5·书面 | — | M2-T3·真机(Track A)；M2-T6·隔离测试机(AUTH) | — | — | M5-T4·真机；M5-T6·决策 | 真机（Track A 明确标注非自研驱动） | device-enumeration.txt、perf.json、screenshots/ | 录音工具、浏览器音频页、会议软件（按实测） |
+| FR-002 | 虚拟麦克风受控验证（Track B 另设门禁） | M0-T5·书面 | — | M2-T3·真机(Track A)；M2-T6·隔离测试机(AUTH·可选，未授权⇒NOT_RUN) | — | — | M5-T4·真机；M5-T6·决策 | 真机（Track A 明确标注非自研驱动） | device-enumeration.txt、perf.json、screenshots/ | 录音工具、浏览器音频页、会议软件（按实测） |
 | FR-003 | 两设备读统一 Runtime 输出、独立启停 | — | M1-T6·真机 | M2-T4·真机 | — | M4-T5·Mock素材+真机输出 | — | 真机 | perf.json、test-results.json、screenshots/ | Windows Camera + 第二应用 |
 | FR-004 | 旁路/无AI/单AI/多AI 四模式 | — | M1-T2·CI（旁路雏形） | — | M3-T1·真机(单)；M3-T5·真机输出(Mock合成音替身)；M3-T8·真机(多链) | M4-T2·真机(理解)；M4-T3·真机输出(预录/合成帧替身)；M4-T5·Mock素材(端到端) | — | 真机 + Mock 素材边界标注 | test-results.json、perf.json | 同上 |
 | FR-005 | 物理摄像头/麦克风采集 + 授权控制 | — | M1-T7·真机 | M2-T2·真机 | — | — | — | 真机 | environment.json、perf.json、screenshots/ | 系统隐私面板 + 应用 |
@@ -38,12 +41,12 @@
 
 | 风险 ID | 摘要 | 缓解任务 | 决策门 | 证据级别 |
 |---|---|---|---|---|
-| R-01 | 虚拟麦克风驱动开发/签名成本高 | M0-T5（书面）；M2-T6（PoC·AUTH）；M5-T6（交付决策） | G2、G5 | 书面 + 隔离测试机·真机 |
+| R-01 | 虚拟麦克风驱动开发/签名成本高 | M0-T5（书面）；M2-T6（PoC·AUTH·可选，NOT_RUN 合法）；M5-T9（签名执行·AUTH·条件触发）；M5-T6（交付决策） | G2、G5 | 书面 + 隔离测试机·真机 |
 | R-02 | Frame Server 源无法访问用户进程 IPC | M0-T4（验证+备选决策）；M1-T3/T4（实现遵循决策） | **G0**（不过则不 GO） | 真机 |
 | R-03 | 摄像头被独占、多应用冲突 | M1-T6（多消费者）；M1-T7（共享模式打开） | G1 | 真机 |
 | R-04 | GStreamer 动态图/协商复杂 | M1-T2（固定管线）；M1-T6（caps 变更测试）；M2-T1（协商契约） | G1、G2 | CI + 真机 |
 | R-05 | AI 推理背压、音画延迟 | M3-T1（有界队列+旁路）；M3-T8（级联背压）；M3-T7（NFR-06/07） | G3 | 真机 |
-| R-06 | 模型/Codec/插件许可证不兼容 | M0-T2（首次 SBOM）；M1-T1（逐依赖 SBOM 机制）；M2-T3（桥接许可）；M3-T4（模型权重）；M5-T3（封版审查） | G5 | 书面 + 自动化校验 |
+| R-06 | 模型/Codec/插件许可证不兼容 | M0-T2（首次 SBOM）；M1-T1（逐依赖 SBOM 机制）；M2-T3（桥接许可）；M3-T4（模型权重）；M5-T3（封版审查）；M5-T9（签名执行·AUTH·条件触发） | G5 | 书面 + 自动化校验 |
 | R-07 | OS/GPU/编解码环境差异 | M0-T1（环境盘点）；M1-T2（CPU 基线先行）；M5-T4/T5（矩阵与镜像） | G0、G5 | 真机 |
 | R-08 | 隐私与被动监听担忧 | M2-T5/M3-T7（可撤销）；M4-T3（来源透明）；M5-T1（显式状态 GUI） | G2、G3、G5 | 真机 |
 | R-09 | 提前开发 IM 稀释资源 | M6-T4/T5（IM 仅作消费者与评估，不入主线） | M6 | 真机（spike） |
@@ -60,7 +63,7 @@
 | 1. Sample 构建/注册/运行/卸载证据完整 | M0-T2 | G0 | 真机 |
 | 2. `Shutu AI Camera` 被 ≥2 独立应用识别消费 | M0-T3、M1-T6 | G0、G1 | 真机 |
 | 3. Runtime 经实际 IPC 提供视频帧（非进程内 Mock） | M1-T5、M1-T6 | G1 | 真机 |
-| 4. 麦克风被第三方应用识别，且说明桥接 vs 自研驱动 | M2-T3、M2-T6 | G2 | 真机 |
+| 4. 麦克风被第三方应用识别，且说明桥接 vs 自研驱动 | M2-T3、M2-T6（可选，未授权⇒NOT_RUN 并显式记录） | G2 | 真机 |
 | 5. Session/Clock/Track 协议实现 + 契约测试 | M2-T1 | G2 | CI |
 | 6. AI 关闭时设备继续正常提供媒体 | M1-T8、M3-T9（基线复测） | G1、G3 | 真机 |
 | 7. AI Worker 停止/超时按规则旁路/降级 | M3-T7 | G3 | 真机 |
@@ -68,15 +71,17 @@
 | 9. 用户可撤销采集与远程 AI 权限；日志无默认媒体 | M2-T5、M3-T7、M5-T1 | G2、G3、G5 | 真机 |
 | 10. 安装/卸载/重启可复现；驱动签名限制已记录 | M5-T2、M5-T3 | G5 | 真机 |
 
-### §15.2 双设备可分发 Beta 附加门禁
+### §15.2 双设备可分发 Beta 附加门禁（ADR-011 D4：按交付等级勾稽）
 
-| 清单项 | 覆盖任务 | Gate | 证据级别 |
-|---|---|---|---|
-| 1. 自研音频设备/合法分发策略与签名链明确达标 | M2-T6、M5-T3、M5-T6 | G2、G5 | 隔离测试机 + 书面 |
-| 2. 普通用户无需关闭 OS 安全防护即可装卸 | M5-T2、M5-T7 | G5 | 真机 |
-| 3. 兼容矩阵、性能报告、故障注入、威胁模型、SBOM 通过审查 | M5-T4、M5-T5、M5-T7、M5-T3 | G5 | 真机 + 书面 |
-| 4. 启动与设备失效可预期、可回滚、无持久占用 | M5-T2、M5-T5 | G5 | 真机 |
-| 5. 用户资料/设备 ID/媒体/调试信息最小保留 | M3-T7、M5-T7 | G3、G5 | 真机 |
+> **等级说明**：`L2-only` = 仅 Beta-L2（完整双设备）必需；`L1+L2` = 两个交付等级都必须满足。`GO(LEVEL=L1)` 时 L2-only 行不满足是**允许的降级**，但 G5 报告必须显式声明差距；`L1+L2` 行任何一条不满足 ⇒ 不得判 GO（任何等级）。
+
+| 清单项 | 覆盖任务 | Gate | 等级 | 证据级别 |
+|---|---|---|---|---|
+| 1. 自研音频设备/合法分发策略与签名链明确达标 | M2-T6（可选，NOT_RUN 合法）、M5-T3（签名计划）、M5-T9（签名执行·AUTH）、M5-T6（交付决策） | G2、G5 | **L2-only** | 隔离测试机 + 书面 |
+| 2. 普通用户无需关闭 OS 安全防护即可装卸 | M5-T2、M5-T7 | G5 | L1+L2 | 真机 |
+| 3. 兼容矩阵、性能报告、故障注入、威胁模型、SBOM 通过审查 | M5-T4、M5-T5、M5-T7、M5-T3 | G5 | L1+L2 | 真机 + 书面 |
+| 4. 启动与设备失效可预期、可回滚、无持久占用 | M5-T2、M5-T5 | G5 | L1+L2 | 真机 |
+| 5. 用户资料/设备 ID/媒体/调试信息最小保留 | M3-T7、M5-T7 | G3、G5 | L1+L2 | 真机 |
 
 ## 5. Gate × Evidence 对应表（每个门的固定证据，基线 §10.3）
 
@@ -84,9 +89,9 @@
 |---|---|---|
 | G0 | M0-T7 | environment.json、build.log、test-results.json、perf.json、device-enumeration.txt、screenshots/、security-checklist.md、licensing-sbom.json、decision.md |
 | G1 | M1-T8 | 同上（perf.json 含 NFR-01/03/07 采样） |
-| G2 | M2-T7 | 同上 + trackB 子集 |
+| G2 | M2-T7 | 同上 + Track B 显式结论（GO/HOLD/STOP/NOT_RUN——M2-T6 = NOT_RUN 时 decision.md 必含原因与复评触发条件） |
 | G3 | M3-T9 | 同上 |
 | G4 | M4-T6 | 同上 + 零改动 diff 证据 |
-| G5 | M5-T8 | 同上 + compatibility-matrix.md 定稿 + Release Evidence |
+| G5 | M5-T8 | 同上 + compatibility-matrix.md 定稿 + Release Evidence + 交付等级声明（GO(LEVEL=L1/L2)） |
 
-> 目录约定：`artifacts/<gate>/<run-id>/`；任何缺失文件在该 Gate 的 decision.md 中必须显式说明原因，缺失真机证据 ⇒ 判定不得为 GO。
+> 目录约定：`artifacts/<gate>/<run-id>/`（命名、manifest、索引与归档遵循 `docs/tasks/EVIDENCE_SPEC.md`，ADR-011 D5）；任何缺失文件在该 Gate 的 decision.md 中必须显式说明原因，缺失真机证据 ⇒ 判定不得为 GO。
