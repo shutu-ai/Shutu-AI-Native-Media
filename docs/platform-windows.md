@@ -131,3 +131,34 @@
 （`S-1-5-80-3915894004-2104103821-3047269622-1811662266-774708259`，`sc showsid`）。
 Frame Server 进程令牌携带该组 SID——以它作为管道 DACL 主体（替代共享的 S-1-5-19）可收紧最小授权；
 该主体是否实际放行 Frame Server 客户端为推断，属 ADR-012 U1，M1-T4 强制实测（技术债 P1-1 验收内容）。
+
+## 8. 双应用消费与生命周期实测（M0-T3，2026-11-13）
+
+> 依据 run `G0-20261113-201619-b4dc`（真机；判定 M0-T3=PASS，含 App A 已知缺陷）。完整判定矩阵、偏差清单 D1-D13 与 SYS_CHANGE 台账见 run `decision.md`；测试页与控制服务 `tests/fixtures/getusermedia/`。
+
+### 8.1 消费矩阵事实（Windows 11 26200.9974 真机）
+
+| 应用（版本） | 枚举 vcam | 渲染合成帧 | 并发消费 | Stop/Start 恢复 |
+|---|---|---|---|---|
+| Chrome 157.0.8103.51（getUserMedia） | ✅ 系统级 2 机可见 | ✅ 640x480@30，图案=M0-T2 基线 | ✅ 与相机应用（物理头）经同一 Frame Server 并发无干扰 | ✅ track 重建 225ms；重注册后**不自动恢复，手动重开正常** |
+| Windows 相机 2026.2608.1.0（UWP） | ✅ 选择器可见 | ⚠️ **首次渲染成功**（多次截图证实），但**摄像头间切换间歇抛 `0xA00F4241<CameraSwitchFailed>(0x80004003)`，错误态持久不可自愈**（重启应用/SE 检查/Frame Server 重启均无效） | ❌ 阻断（不稳定消费者） | ❌ 卡死错误态无法恢复 |
+| 设备移除时另一应用行为 | Chrome：track **ENDED**（未观察到 mute 前置），0 错误；相机应用（物理头位）：零影响持续渲染 | | | |
+
+### 8.2 生命周期时序事实（Frame Server）
+
+| 事件 | 实测时延 | 备注 |
+|---|---|---|
+| track 全停 → FS STOPPED | ~36 s | 需求服务拆除延迟 |
+| 空闲 → getUserMedia 请求 → FS RUNNING | ~0.6 s | 按需冷启动 |
+| 使用中移除 → FS 状态 | **不中断**（其他摄像头会话维持 RUNNING） | 多会话并存实证 |
+| 全部消费者退出 → FS 降停（终态观察） | 分钟级（本 run 8.5 min 后 STOPPED） | 与 36s 路径不同的空闲超时路径，M1 复测 |
+| 注销后 DLL 目录删除被拒 | svchost 缓存锁定 | `sc stop frameserver` 释放后删除成功；FS 随后按需自恢复 |
+| 重复注册/注销 | A1→B2→A3→B4 四轮循环实例 ID 确定性一致，无残留 | 终态：设备 ABSENT、COM=no、目录已删 |
+
+### 8.3 测试方法学沉淀（M1 复用）
+
+- **窗口遮挡会停摆 rVFC 计帧**（presentedFrames 不增长）但 track 事件与网络通道正常——帧数证据须前台化窗口采集；后台期以事件流为准。
+- **PrintWindow 对 UWP/Chrome 可能取到陈旧合成帧**（遮挡/过渡态）——截图判定须配合 report JSONL 交叉验证；本次两处证据命名失准（D13）均由收口逐图审计发现，**截图判读必须人工逐图复核，不得只看文件名**。
+- 提权 .cmd 必须 CRLF+ASCII（LF/UTF-8 中文 REM 在 GBK cmd.exe 静默失败）；提权上下文 `copy` 有静默失败先例，用 `PowerShell Copy-Item -ErrorAction Stop` + MARK 步骤标记。
+- /cmd 文件通道按值去重（`cmd !== cmdFileSeen`），重发同值命令无效。
+- Chrome 多实例防污染：`taskkill //F` 后重启须加 `--no-session-crash-bubble --hide-crash-restore-bubble`。

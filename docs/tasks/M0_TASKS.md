@@ -11,7 +11,7 @@
 |---|---|---|---|---|
 | M0-T1 | 环境盘点脚本 + 工具链补齐（VS Build Tools、GStreamer MSVC 版） | — | — | 已完成（run G0-20261111-174257-8532） |
 | M0-T2 | 官方 VirtualCamera Sample 构建、注册、枚举、卸载 | M0-T1 | — | 已完成（run G0-20261111-182351-1DB8） |
-| M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 未开始 |
+| M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 已完成（run G0-20261113-201619-b4dc；App A 已知缺陷见 decision.md） |
 | M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 已完成（run G0-20261112-191515-3C36） |
 | M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | —（升级为构建/安装任务时须另行授权） | 未开始 |
 | M0-T6 | `contracts/` 骨架 + 证据基线设施 + `docs/adr/` 约定 | M0-T1 | — | 已完成（run G0-20261113-153144-57a0） |
@@ -153,7 +153,7 @@ M0-T2。
 **10. 应保留的测试证据**
 `device-enumeration.txt`、`screenshots/`（双应用画面）、`test-results.json`（应用 × 操作矩阵）、`environment.json`（应用版本段）。
 
-**11. 状态**：未开始
+**11. 状态**：**已完成（2026-11-13，run `G0-20261113-201619-b4dc`，STATUS=PASS 含已知缺陷）**——应用 B（Chrome 157.0.8103.51）全路径 PASS（独立/并发(不同设备变体)/Stop/Start/移除 ENDED/重注册手动恢复）；应用 A（Windows 相机 2026.2608.1.0）首次渲染合成帧成功但切换间歇 CameraSwitchFailed(0xA00F4241) 且错误态不可自愈，判定 FAIL（稳定消费能力），已作为 R-03/R-12 设计输入写入 run decision.md §2/§2a；重复注册/注销 A1→B2→A3→B4 四轮无残留，SC-5 完整回滚终态干净。证据九文件齐全 + manifest 人工审计（INTEGRITY-OK）。
 
 ---
 

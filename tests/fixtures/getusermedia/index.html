@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Shutu M0-T3 getUserMedia</title>
+<style>
+  body { font-family: "Segoe UI", sans-serif; margin: 16px; background: #f5f5f5; color: #111; }
+  h1 { font-size: 18px; margin: 0 0 8px; }
+  #panel { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  #video { width: 96vw; height: 72vh; background: #000; }
+  #stats { font-size: 15px; line-height: 1.6; background: #fff; border: 1px solid #bbb;
+           padding: 10px 14px; min-width: 300px; }
+  .big { font-size: 22px; font-weight: 700; }
+  #statelist { font-size: 12px; max-height: 140px; overflow-y: auto; background: #fff;
+               border: 1px solid #bbb; padding: 6px 10px; margin-top: 10px; white-space: pre-wrap; }
+  #devlist { font-size: 12px; max-height: 110px; overflow-y: auto; background: #fff;
+             border: 1px solid #bbb; padding: 6px 10px; margin-top: 10px; white-space: pre-wrap; }
+  .ok { color: #070; } .bad { color: #c00; } .idle { color: #888; }
+</style>
+</head>
+<body>
+<h1>Shutu M0-T3 getUserMedia 消费探针（App B: Chrome/Chromium）</h1>
+<div id="panel">
+  <div>
+    <video id="video" autoplay playsinline muted></video>
+    <div id="devlist">devices: (pending)</div>
+  </div>
+  <div>
+    <div id="stats">
+      STATE: <span id="state" class="idle">INIT</span><br>
+      DEVICE: <span id="device">—</span><br>
+      SETTINGS: <span id="settings">—</span><br>
+      FRAMES: <span id="frames">0</span><br>
+      FPS(rolling30): <span id="fps">—</span><br>
+      ERRORS: <span id="errors">0</span>
+    </div>
+    <div id="statelist">events:</div>
+  </div>
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const VCAM_LABEL_RE = /SWVCamMediaSource|虚拟摄像头/i;
+let stream = null, frameCount = 0, frameTimes = [], errorCount = 0;
+let events = [], errors = [], lastReport = 0, currentDeviceId = null, currentLabel = null;
+let cmdFileSeen = "";
+
+function ts() { return new Date().toISOString(); }
+function logEvent(msg) { events.push({ t: ts(), msg }); renderEvents(); }
+function renderEvents() { $("statelist").textContent = "events:\n" + events.slice(-40).map(e => e.t.slice(11, 23) + " " + e.msg).join("\n"); }
+function setState(s, cls) { $("state").textContent = s; $("state").className = cls || "idle"; }
+function showError(name, msg) { errorCount++; errors.push({ t: ts(), name, msg: String(msg).slice(0, 200) }); $("errors").textContent = errorCount; logEvent("ERROR " + name + ": " + String(msg).slice(0, 80)); }
+
+async function enumerate() {
+  const devs = await navigator.mediaDevices.enumerateDevices();
+  const cams = devs.filter(d => d.kind === "videoinput");
+  $("devlist").textContent = "devices:\n" + cams.map((d, i) =>
+    i + ": " + (d.label || "(label hidden)") + " | id…" + (d.deviceId || "").slice(-8)).join("\n");
+  return cams;
+}
+
+async function openVcam() {
+  // 首选：权限已预授权（profile Preferences 预注入）时标签可见，直接定位虚拟摄像头，全程不触碰物理摄像头
+  let cams = await enumerate();
+  let vcam = cams.find(d => VCAM_LABEL_RE.test(d.label));
+  if (!vcam) {
+    // 回退：权限未放行（标签为空）→ 请求一次任意摄像头权限（--use-fake-ui-for-media-stream 自动放行 UI，媒体路径真实）
+    setState("PERM", "idle");
+    let perm;
+    try { perm = await navigator.mediaDevices.getUserMedia({ video: true }); }
+    catch (e) { setState("PERM-FAIL", "bad"); showError("getUserMedia(perm)", e); return false; }
+    perm.getTracks().forEach(t => t.stop());
+    cams = await enumerate();
+    vcam = cams.find(d => VCAM_LABEL_RE.test(d.label));
+  }
+  if (!vcam) { setState("VCAM-NOT-FOUND", "bad"); showError("find-vcam", "labels: " + cams.map(d => d.label).join(" ; ")); return false; }
+  currentDeviceId = vcam.deviceId; currentLabel = vcam.label;
+  return startTrack();
+}
+
+async function startTrack() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: currentDeviceId } } });
+  } catch (e) { setState("OPEN-FAIL", "bad"); showError("getUserMedia(vcam)", e); return false; }
+  const track = stream.getVideoTracks()[0];
+  $("video").srcObject = stream;
+  setState("RUNNING", "ok");
+  logEvent("track started: " + track.label + " readyState=" + track.readyState);
+  track.addEventListener("ended", () => { setState("ENDED", "bad"); logEvent("track ENDED"); postReport(true); });
+  track.addEventListener("mute", () => { logEvent("track MUTE (frames stalled?)"); postReport(true); });
+  track.addEventListener("unmute", () => { logEvent("track UNMUTE"); postReport(true); });
+  const settings = track.getSettings();
+  $("device").textContent = track.label + " | id…" + currentDeviceId.slice(-8);
+  $("settings").textContent = (settings.width || "?") + "x" + (settings.height || "?") + "@" + (settings.frameRate || "?");
+  const video = $("video");
+  if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+    let firstPres = null, firstMedia = 0;
+    const cb = (now, meta) => {
+      if (stream && stream.getVideoTracks()[0] === track) {
+        if (firstPres === null) { firstPres = meta.presentedFrames; firstMedia = meta.mediaTime; }
+        frameCount = meta.presentedFrames - firstPres;
+        const mediaEl = meta.mediaTime - firstMedia;
+        $("frames").textContent = frameCount;
+        $("fps").textContent = mediaEl > 2 ? (frameCount / mediaEl).toFixed(1) : "—";
+        video.requestVideoFrameCallback(cb);
+      }
+    };
+    video.requestVideoFrameCallback(cb);
+  } else {
+    showError("rVFC", "requestVideoFrameCallback unsupported");
+  }
+  return true;
+}
+
+function stopTrack(reason) {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); }
+  $("video").srcObject = null;
+  stream = null; frameTimes = [];
+  setState(reason || "STOPPED", "idle");
+  logEvent("track stopped: " + (reason || ""));
+  postReport(true);
+}
+
+function reportPayload() {
+  const t = stream ? stream.getVideoTracks()[0] : null;
+  return {
+    t: ts(), state: $("state").textContent, device: currentLabel,
+    deviceIdSuffix: currentDeviceId ? currentDeviceId.slice(-8) : null,
+    readyState: t ? t.readyState : null,
+    settings: $("settings").textContent, frameCount,
+    fps: $("fps").textContent, errorCount,
+    events: events.slice(-50), errors: errors.slice(-20)
+  };
+}
+async function postReport(force) {
+  const now = Date.now();
+  if (!force && now - lastReport < 4500) return;
+  lastReport = now;
+  try {
+    await fetch("/report", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reportPayload()) });
+  } catch (e) { /* 服务器未起时静默，页面仍显示 */ }
+}
+
+async function pollCmd() {
+  try {
+    const r = await fetch("/cmd?since=" + encodeURIComponent(cmdFileSeen), { cache: "no-store" });
+    const j = await r.json();
+    if (j.cmd && j.cmd !== cmdFileSeen) {
+      cmdFileSeen = j.cmd;
+      logEvent("cmd received: " + j.cmd);
+      if (j.cmd.startsWith("stop")) stopTrack("STOPPED(cmd)");
+      else if (j.cmd.startsWith("start")) { frameCount = 0; await openVcam(); }
+      else if (j.cmd.startsWith("report")) postReport(true);
+      else if (j.cmd.startsWith("enumerate")) enumerate();
+    }
+  } catch (e) { /* 控制通道未起时静默 */ }
+}
+
+window.addEventListener("load", async () => {
+  logEvent("page loaded, UA=" + navigator.userAgent.slice(0, 60));
+  enumerate();
+  await openVcam();
+  postReport(true);
+  setInterval(() => postReport(false), 5000);
+  setInterval(pollCmd, 1000);
+});
+</script>
+</body>
+</html>
