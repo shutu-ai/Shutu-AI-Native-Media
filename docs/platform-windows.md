@@ -124,3 +124,10 @@
 
 - 服务按需启停使「定时快照」必然脱靶：用**事件驱动轮询**（0.4s `sc query`，RUNNING 即捕获）+ **拉流循环扩窗**（官方 streamtest 连发）；脚本留档 run `staging/probe-watch*.ps1`。
 - LS 侧探针走计划任务（`/ru NT AUTHORITY\LOCALSERVICE`）：**触发点必须未过期**（用 `/sc daily /st 23:59` + 手动 `/run`；`/sc once /st 00:00` 会在 /run 前被调度器清除）；session 0 内 `timeout` 不可靠，用 `ping -n` 延时；wrapper 输出在 `start /b` 后可能截断（关键输出须在截断点前落盘或写独立文件）。
+
+### 7.5 服务 SID 类型补充（M0-T6 只读查询，2026-11-13）
+
+`sc qsidtype frameserver` = **UNRESTRICTED**；per-service SID = **NT SERVICE\FrameServer**
+（`S-1-5-80-3915894004-2104103821-3047269622-1811662266-774708259`，`sc showsid`）。
+Frame Server 进程令牌携带该组 SID——以它作为管道 DACL 主体（替代共享的 S-1-5-19）可收紧最小授权；
+该主体是否实际放行 Frame Server 客户端为推断，属 ADR-012 U1，M1-T4 强制实测（技术债 P1-1 验收内容）。

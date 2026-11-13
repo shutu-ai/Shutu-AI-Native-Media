@@ -1,0 +1,21 @@
+{
+  "$comment": "manifest.json v1.0 schema（EVIDENCE_SPEC §2，M0-T6 collect-evidence 生成器）。dotted path 定位字段；type ∈ string|number|bool|object|array；required 缺失即 FAIL；nullable 允许 null。格式级语义（run-id/sha256/路径安全/一致性）在 collect_evidence.py validate_manifest() 内实现；磁盘完整性（存在/大小/哈希/EXTRA/SUMS）属 verify 子命令。",
+  "schema_version": "1.0",
+  "fields": {
+    "run_id": { "type": "string", "required": true, "desc": "G<k>-yyyymmdd-hhmmss-4hex（EVIDENCE_SPEC §1）" },
+    "task_ids": { "type": "array", "required": true, "desc": "本 run 归属的任务 ID 列表" },
+    "gate": { "type": "string", "required": true, "desc": "G0~G5，须与 run_id 前缀一致" },
+    "created_local": { "type": "string", "required": true, "desc": "首次生成时刻（本地 ISO8601 含时区）；幂等更新时保留" },
+    "machine": { "type": "object", "required": true },
+    "machine.os_build": { "type": "string", "required": true, "nullable": true },
+    "machine.cpu": { "type": "string", "required": true, "nullable": true },
+    "machine.gpu": { "type": "string", "required": true, "nullable": true },
+    "machine.ram_gb": { "type": "number", "required": true, "nullable": true },
+    "git_commit": { "type": "string", "required": true, "nullable": true, "desc": "生成证据时的工作树 commit（7~40 hex）" },
+    "tool_versions": { "type": "object", "required": true, "desc": "键值对，如 gstreamer/rustc/vs_buildtools" },
+    "files": { "type": "array", "required": true, "desc": "按 path 排序；不含 manifest.json 与 SHA256SUMS.txt 自身" },
+    "system_changes": { "type": "array", "required": true, "desc": "ADR-011 D6：每项含 action/scope/rollback/confirmed_by_user" },
+    "not_run_tasks": { "type": "array", "required": true, "desc": "ADR-011 D1：NOT_RUN 任务 ID 及原因（审计用）" },
+    "notes": { "type": "string", "required": true }
+  }
+}

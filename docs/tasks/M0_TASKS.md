@@ -14,7 +14,7 @@
 | M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 未开始 |
 | M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 已完成（run G0-20261112-191515-3C36） |
 | M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | —（升级为构建/安装任务时须另行授权） | 未开始 |
-| M0-T6 | `contracts/` 骨架 + 证据基线设施 + `docs/adr/` 约定 | M0-T1 | — | 未开始 |
+| M0-T6 | `contracts/` 骨架 + 证据基线设施 + `docs/adr/` 约定 | M0-T1 | — | 已完成（run G0-20261113-153144-57a0） |
 | M0-T7 | **G0 Gate 汇总**：证据组装 + GO/HOLD/STOP 判定（AGG） | M0-T3~T6 终态（AGG） | — | 未开始 |
 
 ---
@@ -284,7 +284,7 @@ M0-T1（脚本运行时环境）。
 **10. 应保留的测试证据**
 `test-results.json`（schema/幂等测试）、`build.log`、`licensing-sbom.json`（脚本依赖，若有第三方库）。
 
-**11. 状态**：未开始
+**11. 状态**：已完成（run `G0-20261113-153144-57a0`，2026-11-13）——contracts/ 三子目录占位 README（冻结流程+版本承诺，无协议字段，R-10 同型风险受控）；`tools/collect-evidence` v1.0（init/manifest/validate/verify/--selftest，stdlib-only；字节级幂等；init 拒绝已存在 run；selftest 16/16 + CLI 合法/非法/重复执行场景 9/9，test-results.json 25 项全过）；`docs/adr/` 机制补齐（README 编号/生命周期/§14.3 触发条件清单 + TEMPLATE + ADR-011 索引登记；ADR-011 已在库 ⇒ 编号检查后新 ADR=**ADR-012**）；**ADR-012**：R-02 正式化 CONDITIONAL_GO——Named Pipe 控制通道 Accepted、帧承载=管道复用首选且是否保留由 M1-T4/T5 实测（P1-3）决定（未达标不得标记生产可用）、七条安全设计要求 S1-S7、共享内存备选启用条件（D4）；新增实测事实 V7（FrameServer SERVICE_SID_TYPE=UNRESTRICTED + per-service SID，只读查询）；`docs/TECH_DEBT.md` 新建（P1-1/P1-2/P1-3 正式登记 OPEN，未验证不得 CLOSED）；M1-T4/T5 任务字段挂接技术债；基线文件零改动（§5.1 修订记录于 ADR-012 §5）；零系统状态变更（SYS_CHANGE=[]）；偏差 3 项记 run decision.md §3（TEMPLATE 文件名/–-machine-json 替代 –-from/adr 目录已存在）
 
 ---
 

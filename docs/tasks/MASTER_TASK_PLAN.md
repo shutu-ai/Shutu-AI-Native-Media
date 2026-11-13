@@ -35,7 +35,7 @@ graph LR
 | M0-T3 | 双独立应用消费与生命周期验证 | M0-T2 | — | 未开始 |
 | M0-T4 | Frame Server 约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 已完成（run G0-20261112-191515-3C36） |
 | M0-T5 | SysVAD 风险书面评估 | — | — | 已完成（run G0-20261111-212232-D720） |
-| M0-T6 | contracts 骨架 + 证据基线设施 + adr 约定 | M0-T1 | — | 未开始 |
+| M0-T6 | contracts 骨架 + 证据基线设施 + adr 约定 | M0-T1 | — | 已完成（run G0-20261113-153144-57a0） |
 | M0-T7 | **G0 Gate 汇总** | M0-T3/T4/T5/T6 | — | 未开始 |
 | M1-T1 | Rust workspace + threat-model 初版 + SBOM 机制 | G0=GO | — | 未开始 |
 | M1-T2 | testsrc→appsink 基础视频图 | M1-T1 | — | 未开始 |
@@ -82,7 +82,7 @@ graph LR
 | M6-T4 | LiveKit/WebRTC 消费者 spike | M6-T1 + 用户批准 | — | 未开始 |
 | M6-T5 | AI-Native IM 集成评估报告 | M6-T2/T3/T4 | — | 未开始 |
 
-**状态统计**：未开始 47 ｜ 进行中 0 ｜ 已完成 4（M0-T1、M0-T2、M0-T4、M0-T5）｜ BLOCKED（门禁）M1–M6 全部 ｜ AUTH·PENDING（不阻塞主线 Gate）M2-T6、M5-T9——未授权时记 NOT_RUN（ADR-011）。
+**状态统计**：未开始 46 ｜ 进行中 0 ｜ 已完成 5（M0-T1、M0-T2、M0-T4、M0-T5、M0-T6）｜ BLOCKED（门禁）M1–M6 全部 ｜ AUTH·PENDING（不阻塞主线 Gate）M2-T6、M5-T9——未授权时记 NOT_RUN（ADR-011）。
 
 ## 4. 当前环境登记（2026-11-10 规划期探测；2026-11-11 工具链补齐后更新）
 
@@ -151,3 +151,4 @@ ARCHITECTURE_BASELINE.md（唯一事实来源）
 | 2026-11-11 | 状态变更 | M0-T2 未开始 → **已完成**（run G0-20261111-182351-1DB8）：官方 Windows-Camera Sample 原样构建（commit 626f8b19，MIT，SBOM 0.2 五新增条目）；3 轮注册→拉流（TestVCam 30 帧校验×3）→Windows Camera 合成画面像素级留证→注销循环全通过，设备实例 ID 逐轮一致；完整回滚（/Uninstall + COM 键删 + 目录删 + Frame Server DLL 缓存处置）终态断言 ABSENT/COM=no；SYS_CHANGE 台账 3 项均经用户确认；偏差（BuildTools 无 VS IDE→MSI 不可构建，README 键 + 官方 Installer 控制台替代）记 run decision.md §3；复现文档 `platforms/windows/virtual-camera/README.md` | M0_TASKS M0-T2 DoD + AGENTS §3 SYS_CHANGE + 基线 §14.1/§14.3（无 ADR 级边界触碰） |
 | 2026-11-11 | 状态变更 | M0-T5 未开始 → **已完成**（run G0-20261111-212232-D720）：纯书面研究（无构建/安装/系统变更，task 定义禁止）；①WDK/EWDK 版本矩阵（28000.2526 配 VS 2026 / 26100.6584 配 VS 2022 / EWDK 独立许可）+ SysVAD 构建条件（main 需 v142 工具集 + WIL submodule——本机仅 v143/v145，缺口书面确认）；②签名四路径矩阵（HLK/attestation/preproduction/test；原样 sample 有 HLK 预期失败项 ⇒ 不可直接提交；本机永不测试签名）；③硬边界写入 platform-windows.md §6；④测试机 unconfirmed 保持 ⇒ Track B HOLD + 复评三触发条件；⑤Track A 三候选许可/分发（VB-Cable/VoiceMeeter Donationware+Volume Licensing、VAC 商业 $30/$50+custom version 捆绑通道，**不默认随产品捆绑**）；⑥GO/HOLD 触发条件 + Track A/B 边界声明。产出：run decision.md（官方引用 10 项，访问日期 2026-11-11）+ licensing-sbom.json 0.3（6 条 research-only）+ docs/licensing.md v0.1（新建）| M0_TASKS M0-T5 DoD + AGENTS §6（SBOM）+ 基线 §2.2/§14.1（书面任务，全部未实测判断标「待实测确认」） |
 | 2026-11-13 | 状态变更 | M0-T4 未开始 → **已完成**（run G0-20261112-191515-3C36）：Frame Server 真机事实 F1-F11（LocalService S-1-5-19、运行中 Session 0、完全按需启停、SCM 7036 不记录启停、提权模块表确认 VirtualCameraMediaSource.dll 加载、sdshow 交互用户仅查询权限）；最小 IPC 身份 PoC（源码入库 `tests/contract/ipc-identity-poc/`，cl /O2 /W4 exit 0）12 项矩阵 11 pass / 1 partial=T5（LS 可 OS 级连接用户 DACL 授权管道⇒跨会话连通可行；但服务端 OpenProcess→token 跨会话查询失败⇒进程级身份校验不可行→fail-closed 生效）；T7b 实测否定基线 §5.1 共享内存用户侧前提（用户不能建 Global\ section），T7a 反向可行；SC#3 服务重启 0s 恢复 + 30 帧验证；多用户同账户双会话 29/30 帧；SYS_CHANGE 3 项均经用户确认并完整回滚（ABSENT OK count=0、计划任务已删、Temp/Public 清理）；**R-02=GO**：Named Pipe 首选（帧随控制通道，吞吐留 M1-T4/T5 实测）、LS broker Global section 备选（需新 ADR）、管道 DACL=OS 身份边界五条写入 M1-T4/T5 约束，待 M0-T6 后以首个 ADR 正式化（涉及基线 §5.1 调整，基线 §14.3）；perf.json N/A（无性能验收指标，不伪造数据）；K1-K7 未验证项记 run decision.md §7；一致性检查 38/38 | M0_TASKS M0-T4 DoD + AGENTS §2/§3/§4/§8 + 基线 §5.1/§12/§14.2（R-02 为 G0 GO 前置条件） |
+| 2026-11-13 | 状态变更 | M0-T6 未开始 → **已完成**（run G0-20261113-153144-57a0）：contracts/ 三子目录占位 README（冻结流程+版本承诺，无协议字段）；tools/collect-evidence v1.0（init/manifest/validate/verify/--selftest，stdlib-only，EVIDENCE_SPEC §2 生成器；字节级幂等；init 拒绝已存在 run；selftest 16/16 + CLI 场景 9/9）；docs/adr/ 机制补齐（README 编号/生命周期/触发条件清单 + TEMPLATE；ADR-011 已在库 ⇒ 编号检查后新 ADR=ADR-012）；**ADR-012**（R-02 正式化 CONDITIONAL_GO：Named Pipe 控制通道 Accepted；帧承载=管道复用首选、是否保留由 M1-T4/T5 实测（P1-3）决定、未实测达标不得标记生产可用；七条安全设计要求 S1-S7——LocalService SID 非专属/最小 DACL/防远程与抢占/双向认证与多用户隔离/PoC 异步取消风险（禁止复制）/吞吐理论与验证条件/共享内存备选启用条件；新实测事实 V7=FrameServer SERVICE_SID_TYPE UNRESTRICTED + per-service SID）；docs/TECH_DEBT.md 新建（P1-1/P1-2/P1-3 正式登记，OPEN，未完成验证不得 CLOSED，责任任务 M1-T4/M1-T5）；M1-T4/T5 字段挂接技术债；基线文件零改动（§5.1 修订记录于 ADR-012 §5，升级留基线评审）；零系统状态变更（SYS_CHANGE=[]）；偏差 3 项记 run decision.md §3 | M0_TASKS M0-T6 DoD + AGENTS §9（ADR 模板与变更控制）+ 基线 §14.3 + 用户 M0-T6 指令（含 P1 闭环要求） |
