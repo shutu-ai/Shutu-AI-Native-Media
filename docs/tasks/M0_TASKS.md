@@ -12,7 +12,7 @@
 | M0-T1 | 环境盘点脚本 + 工具链补齐（VS Build Tools、GStreamer MSVC 版） | — | — | 已完成（run G0-20261111-174257-8532） |
 | M0-T2 | 官方 VirtualCamera Sample 构建、注册、枚举、卸载 | M0-T1 | — | 已完成（run G0-20261111-182351-1DB8） |
 | M0-T3 | 双独立应用消费验证 + 生命周期与可复现步骤 | M0-T2 | — | 未开始 |
-| M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 未开始 |
+| M0-T4 | Frame Server 进程约束验证 + IPC 身份 PoC + R-02 决策 | M0-T2 | — | 已完成（run G0-20261112-191515-3C36） |
 | M0-T5 | SysVAD 风险书面评估（不构建、不安装驱动） | — | —（升级为构建/安装任务时须另行授权） | 未开始 |
 | M0-T6 | `contracts/` 骨架 + 证据基线设施 + `docs/adr/` 约定 | M0-T1 | — | 未开始 |
 | M0-T7 | **G0 Gate 汇总**：证据组装 + GO/HOLD/STOP 判定（AGG） | M0-T3~T6 终态（AGG） | — | 未开始 |
@@ -198,7 +198,7 @@ M0-T2（Sample 已在运行）。
 **10. 应保留的测试证据**
 `environment.json`（Frame Server 补充段）、`device-enumeration.txt`、`screenshots/`（进程树、whoami、ACL）、`security-checklist.md`（身份认证 PoC 检查单）、`test-results.json`（PoC 测试）、`decision.md`。
 
-**11. 状态**：未开始
+**11. 状态**：已完成（run `G0-20261112-191515-3C36`，2026-11-12~13）——判定 **M0-T4=PASS、R-02=GO**（run `decision.md` §1/§4）。Frame Server 事实 F1-F11 真机探明：LocalService（S-1-5-19）/Session 0/完全按需启停/SCM 7036 不记录启停/提权模块表确认 VirtualCameraMediaSource.dll 加载/sdshow 交互用户仅查询权限（§2）。最小 IPC 身份 PoC（源码入库 `tests/contract/ipc-identity-poc/`）12 项矩阵：11 pass + 1 partial-with-finding（T5：LS 可 OS 级连接用户 DACL 授权管道，但跨会话服务端进程级 token 校验不可行→fail-closed 按设计拒绝）；T7b 实测否定基线 §5.1 共享内存用户侧前提（用户无 SeCreateGlobalPrivilege 不能建 Global\）；T7a 反向（LS 写→用户读）可行；T6/T9 反证（§3）。SC#3 服务重启 0s 按需恢复 + 多用户同账户双会话拉流 29/30 帧通过（§5）。SYS_CHANGE 3 项（设备注册/LS 探针计划任务/服务重启）均经用户确认并完整回滚（ABSENT OK，§6）。R-02 决策：Named Pipe 首选（帧随控制通道，720p30 吞吐留 M1-T4/T5 实测）、LS broker Global section 备选（仅吞吐不足时，需新 ADR）、管道 DACL=OS 身份边界五条（§4.3）；待 M0-T6 建立 `docs/adr/` 后正式化为 ADR（涉及基线 §5.1 策略调整，§14.3）。perf.json N/A（无性能验收指标）；K1-K7 未验证项见 run `decision.md` §7
 
 ---
 

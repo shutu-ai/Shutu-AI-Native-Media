@@ -11,6 +11,7 @@
 | G0-20261111-174257-8532 | 2026-11-11 | M0-T1 | G0 | 环境盘点脚本 v1.0 首次真机运行 + 工具链实测（VS/GStreamer/Rust/SDK） | 真机 | 21035c8 | 未归档（开发期保留，G0 判定后归档） | M0-T1 判定已完成；screenshots/perf/device-enumeration 不适用（decision.md §5）；unconfirmed：第二隔离测试机 |
 | G0-20261111-182351-1DB8 | 2026-11-11 | M0-T2 | G0 | 官方 VirtualCamera Sample 原样构建 + 注册/拉流/注销 3 轮循环 + Windows Camera 合成画面像素级留证 + 完整回滚 | 真机 | 22397a0 | 未归档（开发期保留，G0 判定后归档） | M0-T2 判定已完成；perf/security-checklist 不适用（decision.md §6）；SYS_CHANGE 3 项（decision.md §4）；SBOM 0.2 五新增条目 |
 | G0-20261111-212232-D720 | 2026-11-11 | M0-T5 | G0 | SysVAD 书面风险评估：WDK/EWDK 版本矩阵 + 签名四路径成本 + 隔离测试机策略（Track B HOLD）+ Track A 三候选许可/分发（不默认随产品捆绑） | 书面 | 377e5d5 | 未归档（开发期保留，G0 判定后归档） | M0-T5 判定已完成；纯书面 run：build/test/perf/device-enumeration/screenshots 不适用（decision.md §10）；system_changes=[]；SBOM 0.3 六条 research-only；测试机 unconfirmed 保持 |
+| G0-20261112-191515-3C36 | 2026-11-12~13 | M0-T4 | G0 | Frame Server 真机事实探明（F1-F11：LocalService/Session 0/按需启停/7036 缺失/模块加载/sdshow）+ 最小 IPC 身份 PoC 12 项矩阵（跨会话 T5/T6/T7a/T7b/T9 全实测）+ SC#3 服务重启恢复 + 多用户同账户双会话拉流 + R-02=GO 决策（Named Pipe 首选/共享内存备选/管道 DACL 安全边界五条） | 真机 | 707514d | 未归档（开发期保留，G0 判定后归档） | M0-T4 判定已完成（PASS）；perf.json N/A（decision.md §8）；SYS_CHANGE 3 项均经确认并回滚（decision.md §6）；K1-K7 未验证项（decision.md §7）；PoC 源码 tests/contract/ipc-identity-poc/ 随状态更新 commit 入库 |
 
 ## 使用说明
 

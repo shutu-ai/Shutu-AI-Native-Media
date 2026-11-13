@@ -83,3 +83,44 @@
   | VoiceMeeter（VB-Audio） | Donationware（30 天后邀购） | 同 VB-Audio 条款体系 |
   | Virtual Audio Cable（Muzychenko） | 商业 $30 Home / $50 Business，永久授权 | **官方 custom（proprietary）version**：改名 + 仅与客户应用使用 |
 - 口径红线：Track A 成功不得表述为「自研虚拟麦克风驱动完成」；G2 汇总须给 Track B 显式结论。
+
+## 7. Frame Server 实测事实与跨会话 IPC（M0-T4，2026-11-12~13）
+
+> 依据 run `G0-20261112-191515-3C36`（真机；判定 M0-T4=PASS、R-02=GO）。完整事实表、PoC 矩阵与决策全文见 run `decision.md`；PoC 源码 `tests/contract/ipc-identity-poc/`。
+
+### 7.1 Frame Server 服务事实（F1-F11 浓缩）
+
+| 事实 | 实测内容 |
+|---|---|
+| 服务标识 | FrameServer / Windows Camera Frame Server；TYPE=20 WIN32_SHARE_PROCESS；DEMAND_START；BINARY_PATH=`System32\svchost.exe -k Camera`；依赖 rpcss（sc qc + CIM 双源） |
+| 运行身份 | **NT AUTHORITY\LocalService（S-1-5-19）**；运行中进程 **SessionId=0**（Session 0 隔离实测确认）；17 线程、句柄 440~462 |
+| 生命周期 | **完全按需启停**：仅活跃拉流期间 RUNNING，流结束数秒~数十秒自动停，多轮 PID 各异；**SCM 7036 事件不记录其启停**（wevtutil 实测）——生命周期监控只能 `sc query` 轮询 |
+| DLL 加载 | 提权模块表确认 **VirtualCameraMediaSource.dll 已加载进 svchost**（连同 frameserver.dll/FrameServerCore.dll/MF* 全栈）；非提权 `tasklist /m` 返回「暂缺」为权限事实，非未加载 |
+| 服务 SDDL | 交互用户(IU)仅查询类权限（CC/LC/SW/LO/CR/RC），无 RP/WP/DC——用户会话代码只能观测服务状态，启停由摄像头激活栈驱动 |
+| 恢复与其他 | sc stop 后再拉流 0s 按需恢复；DLL 被服务缓存锁定（注销后需 `sc stop frameserver` 释放，M0-T2 发现6）；`ServiceProfiles\LocalService` 非管理员不可读 |
+
+### 7.2 跨会话 IPC 身份事实（PoC 双侧实测）
+
+| 主体 | SID | Session | SeCreateGlobalPrivilege |
+|---|---|---|---|
+| 交互用户（Runtime 侧原型） | S-1-5-21-…-1001 | 1 | **无** |
+| Frame Server（LocalService） | S-1-5-19 | 0 | **有** |
+
+实测结论（测试 ID 对应 run test-results.json）：
+
+1. **LS(Session 0) 可 OS 级连接用户进程创建、DACL 显式授 S-1-5-19 的命名管道**（T5 连通成功）；不授即拒 gle=5（T6 反证）——**管道 DACL 即 OS 级身份边界**。
+2. **跨会话服务端 OpenProcess+TokenUser 校验不可行**（T5：用户侧服务进程无法打开 LS 客户端进程查 token，fail-closed 拒绝生效）；同会话下该校验链路工作正常（T1/T3），保留为纵深。
+3. **非提权用户进程不能创建 Global\ 命名对象**（T7b gle=5，SeCreateGlobalPrivilege 不在交互令牌）——基线 §5.1「用户进程创建共享内存 Ring 供服务读」的用户侧前提被实测否定；LS 写→用户读方向可行（T7a）但与视频生产方向相反。
+4. Local\ 命名空间按会话隔离，跨会话不可见（T9）。
+
+### 7.3 R-02 决策摘要（G0 GO 前置条件；全文见 run decision.md §4）
+
+- **控制通道**：Named Pipe——用户会话 Runtime 为服务端 + DACL 显式授 S-1-5-19（D:P 保护，禁 Everyone/NULL SID），Frame Server 内 MediaSource 为客户端。**首选**。
+- **帧数据承载**：首选=**管道复用**（帧随控制通道；720p30/1080p30 吞吐与时延留 M1-T4/T5 实测，≈221 Mb/s 量级）；备选=LS 特权 broker 服务创建 Global\ section（仅当实测吞吐不足，引入需新 ADR）。
+- **安全边界五条**（写入 M1-T4/T5 实现约束）：①管道 DACL=唯一 OS 身份边界；②放弃跨会话进程级 token 校验、保留同会话纵深 + 应用层握手（版本+challenge）附加层；③帧通道只读消费 + 消息长度/超时上限（禁 Frame Server COM 回调阻塞）；④fail-closed（任何校验失败即断连）；⑤日志只记 PID/结果/错误码，不含帧内容。
+- 正式化路径：M0-T6 建立 `docs/adr/` 后以首个 ADR 正式化（涉及基线 §5.1 视频通道策略调整，基线 §14.3）。
+
+### 7.4 探测方法学沉淀（M1 复用）
+
+- 服务按需启停使「定时快照」必然脱靶：用**事件驱动轮询**（0.4s `sc query`，RUNNING 即捕获）+ **拉流循环扩窗**（官方 streamtest 连发）；脚本留档 run `staging/probe-watch*.ps1`。
+- LS 侧探针走计划任务（`/ru NT AUTHORITY\LOCALSERVICE`）：**触发点必须未过期**（用 `/sc daily /st 23:59` + 手动 `/run`；`/sc once /st 00:00` 会在 /run 前被调度器清除）；session 0 内 `timeout` 不可靠，用 `ping -n` 延时；wrapper 输出在 `start /b` 后可能截断（关键输出须在截断点前落盘或写独立文件）。
