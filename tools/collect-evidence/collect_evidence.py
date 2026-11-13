@@ -36,7 +36,7 @@ from pathlib import Path
 SCHEMA_PATH = Path(__file__).resolve().parent / "manifest.schema.json"
 MANIFEST_NAME = "manifest.json"
 SUMS_NAME = "SHA256SUMS.txt"
-RUNID_RE = re.compile(r"^G\d-\d{8}-\d{6}-[0-9a-f]{4}$")
+RUNID_RE = re.compile(r"^G\d-\d{8}-\d{6}-[0-9a-fA-F]{4}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{7,40}$")
 GATE_RE = re.compile(r"^G[0-5]$")

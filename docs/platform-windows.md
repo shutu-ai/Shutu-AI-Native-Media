@@ -162,3 +162,4 @@ Frame Server 进程令牌携带该组 SID——以它作为管道 DACL 主体（
 - 提权 .cmd 必须 CRLF+ASCII（LF/UTF-8 中文 REM 在 GBK cmd.exe 静默失败）；提权上下文 `copy` 有静默失败先例，用 `PowerShell Copy-Item -ErrorAction Stop` + MARK 步骤标记。
 - /cmd 文件通道按值去重（`cmd !== cmdFileSeen`），重发同值命令无效。
 - Chrome 多实例防污染：`taskkill //F` 后重启须加 `--no-session-crash-bubble --hide-crash-restore-bubble`。
+- **run 的 staging 脚本必须自带停止条件**（M0-T7 审计教训 L-1）：M0-T3 遗留 `frameserver-poll.sh` 无限轮询依赖人工 kill 且会话收口遗漏，导致 run 无法收口固化（Git Bash 下 `taskkill /F` 会因 MSYS 路径转义失败，须写 `//F`）——收口检查单须含「无遗留进程」项。
