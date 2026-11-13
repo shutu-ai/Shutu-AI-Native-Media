@@ -1,0 +1,12 @@
+[package]
+name = "media-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+publish.workspace = true
+description = "Platform-agnostic media session/graph/policy/metrics types. Zero external dependencies by design (baseline §3 three-plane decoupling)."
+
+[dependencies]
+
+[lints]
+workspace = true

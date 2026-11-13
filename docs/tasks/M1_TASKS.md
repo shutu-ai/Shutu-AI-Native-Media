@@ -9,7 +9,7 @@
 
 | ID | 目标摘要 | 前置依赖 | AUTH | 状态 |
 |---|---|---|---|---|
-| M1-T1 | Rust workspace 三 crate 骨架 + CI + threat-model 初版 + SBOM 机制 | G0=GO | — | 未开始 |
+| M1-T1 | Rust workspace 三 crate 骨架 + CI + threat-model 初版 + SBOM 机制 | G0=GO | — | 已完成（run G1-20261113-230809-9e2c） |
 | M1-T2 | `testsrc → processing → appsink` 基础视频图 | M1-T1 | — | 未开始 |
 | M1-T3 | 共享内存视频 Ring Buffer（有界、代际序号、契约测试） | M1-T1 | — | 未开始 |
 | M1-T4 | Named Pipe 控制通道（版本化、ACL、身份校验） | M1-T1 | — | 未开始 |
@@ -58,7 +58,7 @@ G0 = GO。
 **10. 应保留的测试证据**
 `artifacts/G1/<run-id>/build.log`、`test-results.json`、`licensing-sbom.json`（gstreamer-rs 等）。
 
-**11. 状态**：未开始
+**11. 状态**：已完成（run G1-20261113-230809-9e2c；CI 全绿 fmt/clippy/test 10/10；gstreamer-rs 0.25.4 真实 MSVC DLL 加载验证；threat-model v0.1 + SBOM v0.4 机制入库；偏差 D-1 MSRS pin kstring 2.0.2；M1-T3 与 ADR-012 顺序冲突修订建议记 run decision.md §5）
 
 ---
 

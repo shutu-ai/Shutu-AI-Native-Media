@@ -1,0 +1,10 @@
+# 本仓库 cargo 全局配置（机器范围：HP_TJ，见 artifacts G0-20261111-174257-8532 environment.json）
+# GStreamer MSVC SDK 路径来自 M0-T1 盘点（C:\gstreamer\1.0\msvc_x86_64，1.28.3）。
+# pkg-config.exe 为该 SDK 自带（bin/ 内），无需额外安装。
+#
+# 注意：运行期 DLL 搜索（gstreamer-1.0-0.dll 等）不在 cargo 层解决——
+# 执行 cargo test / 任何加载 GStreamer DLL 的二进制前，需把 SDK bin 前置到 PATH，
+# 见 scripts/ci.ps1（进程级设置，不污染系统状态）。
+[env]
+PKG_CONFIG = "C:\\gstreamer\\1.0\\msvc_x86_64\\bin\\pkg-config.exe"
+PKG_CONFIG_PATH = "C:\\gstreamer\\1.0\\msvc_x86_64\\lib\\pkgconfig"

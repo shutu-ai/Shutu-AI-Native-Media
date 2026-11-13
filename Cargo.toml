@@ -1,0 +1,21 @@
+[workspace]
+resolver = "2"
+members = [
+    "runtime/media-core",
+    "runtime/gst-adapter",
+    "runtime/device-bridge",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Shutu AI-Native Media"]
+publish = false
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+unwrap_used = "warn"
+expect_used = "warn"

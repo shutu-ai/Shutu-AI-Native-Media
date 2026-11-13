@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "sbom_version": "0.4",
+  "generated_at": "2026-11-13T23:59:00+02:00",
+  "task": "M1-T1",
+  "run_id": "见 EVIDENCE_INDEX（G1 run，M1-T1）",
+  "note": "本文件自 M1-T1 起为仓库级滚动 SBOM（AGENTS §6：逐包登记，M5-T3 封版）。G0 期间版本链 0.1（run 8532，8 条）→ 0.2（run 1DB8，+5）→ 0.3（run D720，+6 research-only）保留于各 run 目录，作为本文件的前置事实来源。",
+  "version_chain": [
+    { "sbom_version": "0.1", "location": "artifacts/G0/G0-20261111-174257-8532/licensing-sbom.json", "entries": 8 },
+    { "sbom_version": "0.2", "location": "artifacts/G0/G0-20261111-182351-1DB8/licensing-sbom.json", "entries_added": 5 },
+    { "sbom_version": "0.3", "location": "artifacts/G0/G0-20261111-212232-D720/licensing-sbom.json", "entries_added": 6, "note": "全部 research-only（SysVAD/WDK/EWDK/Track A 调研），不随产品分发" }
+  ],
+  "entries_v0_4": [
+    {
+      "component": "gstreamer (gstreamer-rs)",
+      "version": "0.25.4",
+      "source": "https://crates.io/crates/gstreamer/0.25.4",
+      "license": "MIT OR Apache-2.0",
+      "linking": "static（Rust crate 编译期并入）；运行期动态链接 GStreamer 1.28.3 MSVC DLL（0.1 已登记 SDK）",
+      "distribution_terms": "MIT/Apache-2.0 双许可，可分发；本仓库产品侧闭源不与 crates 分发条款冲突",
+      "update_channel": "crates.io（cargo update；升级须复测 MSRS 与 GStreamer 最低版本）",
+      "msrs": "1.92",
+      "role": "gst-adapter 直接依赖（ADR-002 媒体底座）"
+    },
+    {
+      "component": "gstreamer-sys",
+      "version": "0.25.4",
+      "source": "https://crates.io/crates/gstreamer-sys/0.25.4",
+      "license": "MIT",
+      "linking": "static（FFI 声明）+ 运行期动态链接 gstreamer-1.0-0.dll 等（构建经 pkg-config 链接 gstreamer-1.0.lib）",
+      "distribution_terms": "MIT，可分发",
+      "update_channel": "crates.io",
+      "msrs": "1.92",
+      "role": "gstreamer 的 -sys FFI 层（真实 MSVC 链接发生地）"
+    },
+    {
+      "component": "glib / glib-sys / gobject-sys",
+      "version": "0.22.10 / 0.22.9 / 0.22.9",
+      "source": "https://crates.io/crates/glib/0.22.10",
+      "license": "MIT（三者一致）",
+      "linking": "static + 运行期动态链接 glib-2.0-0.dll / gobject-2.0-0.dll",
+      "distribution_terms": "MIT，可分发",
+      "update_channel": "crates.io",
+      "msrs": "1.92",
+      "role": "gstreamer-rs 传递依赖（GLib 事件循环与对象系统绑定）"
+    },
+    {
+      "component": "kstring（PINNED）",
+      "version": "2.0.2（固定）",
+      "source": "https://crates.io/crates/kstring/2.0.2",
+      "license": "MIT OR Apache-2.0",
+      "linking": "static",
+      "distribution_terms": "MIT/Apache-2.0，可分发",
+      "update_channel": "crates.io（受 pin 约束）",
+      "msrs": "1.73",
+      "pin_reason": "kstring 2.0.4+ 要求 rustc >= 1.96.0，本机工具链 1.95.0（MSRS 兼容性 pin，记录于 Cargo.lock；工具链升级后复评解锁）",
+      "role": "glib 传递依赖"
+    }
+  ],
+  "transitive_closure": {
+    "authoritative_record": "Cargo.lock（59 包，随提交入库）",
+    "total_packages": 59,
+    "license_summary": "MIT / MIT OR Apache-2.0（cargo metadata 逐包核验，2026-11-13）",
+    "scan_method": "cargo metadata --format-version 1 逐包 license 字段提取；无 GPL/AGPL/未知许可证包"
+  },
+  "new_binaries": "无新增第三方二进制/模型权重/驱动（GStreamer SDK 为 0.1 已登记组件的既有运行时依赖）",
+  "open_items": [
+    "VB-CABLE vendor 书面条款未取得（阻塞 M2-T3 捆绑决策，沿 0.3 登记）",
+    "CI 环境的依赖解析（GitHub Actions runner）在 CI 接入时复核 MSRS 约束"
+  ]
+}

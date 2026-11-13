@@ -1,0 +1,13 @@
+[package]
+name = "device-bridge"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+publish.workspace = true
+description = "Virtual-device bridge shell. Transport policy is NOT hardcoded (ADR-012): Named Pipe control channel preferred; frame-carrier choice deferred to M1-T4/T5 measurements (P1-3)."
+
+[dependencies]
+media-core = { path = "../media-core" }
+
+[lints]
+workspace = true
