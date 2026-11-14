@@ -1,6 +1,6 @@
 # 任务依赖关系与门禁阻塞规则
 
-> **版本**：v1.1（2026-11-11，ADR-011：AGGREGATE 汇总语义 / NOT_RUN 终态 / M5-T3·T9 拆分 / Beta-L1·L2 交付分级）
+> **版本**：v1.2（2026-11-14，M1 任务体系修订：M1-T3 重定义为传输无关 FrameEnvelope（ADR-012 方案 B）、M1-T4 增加候选帧承载实测并新增 BLOCKED_BY M1-T3 依赖边、M1-T5 承载语义修订为已验证帧承载通道；上一版 v1.1（2026-11-11，ADR-011：AGGREGATE 汇总语义 / NOT_RUN 终态 / M5-T3·T9 拆分 / Beta-L1·L2 交付分级））
 > **来源**：`docs/ARCHITECTURE_BASELINE.md` §9（里程碑与门禁）、§14.1/14.2（执行规则与汇报）。共 **51 项任务**（M0:7 / M1:8 / M2:7 / M3:9 / M4:6 / M5:9 / M6:5）。
 > **机器判读优先**：执行 Agent 应以本文「任务边表」的 `BLOCKED_BY` 列为准选择可执行任务；Mermaid 图仅为可视化辅助。
 
@@ -53,9 +53,9 @@
 |---|---|---|---|---|---|
 | M1-T1 | Rust workspace + threat-model 初版 + SBOM 机制 | G0=GO | TASK_DEP | build.log, test-results.json, licensing-sbom.json | 主力开发机 |
 | M1-T2 | testsrc→appsink 基础视频图 | M1-T1 | TASK_DEP | test-results.json, perf.json | 主力开发机 |
-| M1-T3 | 共享内存视频 Ring + 契约测试 | M1-T1 | TASK_DEP | test-results.json, contracts/ipc/v0.1 | 主力开发机 |
-| M1-T4 | Named Pipe 控制通道 | M1-T1 | TASK_DEP | test-results.json, security-checklist.md, contracts/ipc/control-v0.1 | 主力开发机 |
-| M1-T5 | MediaSource 改 IPC ring 读帧 | M0-T4, M1-T3, M1-T4 | TASK_DEP | build.log, test-results.json, screenshots, device-enumeration.txt | 主力开发机 |
+| M1-T3 | 传输无关 FrameEnvelope + 帧缓冲抽象 + 契约测试 | M1-T1 | TASK_DEP | test-results.json, contracts/ipc/frame-envelope | 主力开发机 |
+| M1-T4 | Named Pipe 控制通道 + 候选帧承载实测（P1-1/2/3） | M1-T1, M1-T3 | TASK_DEP | test-results.json, security-checklist.md, perf.json(承载矩阵), contracts/ipc/control-v0.1 | 主力开发机 |
+| M1-T5 | MediaSource 接入已验证帧承载通道 | M0-T4, M1-T3, M1-T4 | TASK_DEP | build.log, test-results.json, screenshots, device-enumeration.txt | 主力开发机 |
 | M1-T6 | 端到端 + 多消费者/用户切换/重复装卸 | M1-T2, M1-T3, M1-T4, M1-T5 | TASK_DEP | perf.json, test-results.json, device-enumeration.txt, screenshots, 故障注入日志 | 主力开发机 |
 | M1-T7 | 物理摄像头输入接入 | M1-T6 | TASK_DEP | perf.json, test-results.json, screenshots, environment.json(设备段) | 主力开发机 |
 | M1-T8 | **G1 Gate 汇总**（NFR-01/03/07 初步） | M1-T6, M1-T7 | **AGG** | 全套九文件（perf.json 含 30min 采样） | 主力开发机 |
@@ -146,7 +146,7 @@
 
 ```
 M0-T1 → M0-T2 → M0-T4(R-02 决策门) → M1-T5 → M1-T6 → M1-T8(G1)
-              ↘ M0-T3 ↗            (M1-T2/T3/T4 可与 T5 前半并行)
+              ↘ M0-T3 ↗            (M1-T2 可与 M1-T3 并行；M1-T4 依赖 M1-T3 的 FrameEnvelope 契约)
 ```
 
 **音频双轨路径**：
@@ -164,7 +164,7 @@ M3-T1 → M3-T3 → M3-T4 → M3-T6 → M3-T7 ↘
 ```
 
 **可并行组**（无相互依赖，可同时开工）：
-- M0-T1 ∥ M0-T5；M0-T3 ∥ M0-T4；M1-T2 ∥ M1-T3 ∥ M1-T4；M3-T4 ∥ M3-T8；M5-T4 ∥ M5-T5；M6-T2 ∥ M6-T3 ∥ M6-T4。
+- M0-T1 ∥ M0-T5；M0-T3 ∥ M0-T4；M1-T2 ∥ M1-T3（M1-T4 在 M1-T3 后，依赖其 FrameEnvelope 契约）；M3-T4 ∥ M3-T8；M5-T4 ∥ M5-T5；M6-T2 ∥ M6-T3 ∥ M6-T4。
 
 ---
 
@@ -185,8 +185,9 @@ graph LR
   T06 --> G0
   G0 -->|GO| M1
   subgraph M1[G1 媒体基础]
-    T11[M1-T1 workspace] --> T12[M1-T2 管线] & T13[M1-T3 Ring] & T14[M1-T4 Pipe]
-    T13 & T14 --> T15[M1-T5 IPC帧源]
+    T11[M1-T1 workspace] --> T12[M1-T2 管线] & T13[M1-T3 FrameEnvelope]
+    T13 --> T14[M1-T4 Pipe+承载实测]
+    T13 & T14 --> T15[M1-T5 MediaSource接入]
     T12 & T15 --> T16[M1-T6 端到端]
     T16 --> T17[M1-T7 物理摄像头]
     T16 & T17 --> T18[M1-T8 G1汇总]

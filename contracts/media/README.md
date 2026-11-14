@@ -10,7 +10,7 @@
 - Clock 与时间轴（同一 Session 音视频同步基准，NFR-04/05 的契约前提）。
 - Event 通道语义（健康、降级、设备状态事件的分类与投递保证）。
 - Policy 挂载点（授权、采样率约束等策略的声明位置，§11 授权控制的落点）。
-- 帧格式头（M1-T3 ring 帧格式的首个具体化输入：格式、代际序号、PTS、有界性）。
+- 帧格式头（M1-T3 FrameEnvelope 帧格式的首个具体化输入：格式、代际序号、PTS、有界性；2026-11-14 修订后为传输无关 FrameEnvelope）。
 
 ## 约束
 
@@ -31,3 +31,4 @@ M1_TASKS M1-T2 字段 5-2 要求「格式由本任务实测确定并写入 contr
   - 协商格式 `NV12`，1280x720，2 平面；`stride = [1280, 1280]`（无对齐 padding）；`plane_offsets = [0, 921600]`；`map_size = 1_382_400` 字节（恰 = 1280×720×1.5）。
   - PTS 单调无违例（10 s / 299 帧）；帧 duration 恒 33.333 ms；实测 29.978 fps（is-live 源实时节奏）。
 - **映射代码**：`runtime/gst-adapter/src/caps.rs`（media-core PixelFormat → caps 字符串；NV12/RGB 两映射，测试覆盖）。
+- **FrameEnvelope 一致性锚点**（2026-11-14 修订注记，M1 任务体系修订·方案 B）：M1-T3（修订后：传输无关 FrameEnvelope，见 contracts/ipc/README.md）的布局合法性验证以本记录实测数值为一致性断言锚点——720p30 NV12：`stride=[1280,1280]`、`plane_offsets=[0,921600]`、`map_size=1_382_400`（UV 偏移 = Y stride×高；总长 = UV 偏移 + UV stride×高/2，不假定平面紧密排列）。

@@ -16,7 +16,7 @@
 | FR-003 | 两设备读统一 Runtime 输出、独立启停 | — | M1-T6·真机 | M2-T4·真机 | — | M4-T5·Mock素材+真机输出 | — | 真机 | perf.json、test-results.json、screenshots/ | Windows Camera + 第二应用 |
 | FR-004 | 旁路/无AI/单AI/多AI 四模式 | — | M1-T2·CI（旁路雏形） | — | M3-T1·真机(单)；M3-T5·真机输出(Mock合成音替身)；M3-T8·真机(多链) | M4-T2·真机(理解)；M4-T3·真机输出(预录/合成帧替身)；M4-T5·Mock素材(端到端) | — | 真机 + Mock 素材边界标注 | test-results.json、perf.json | 同上 |
 | FR-005 | 物理摄像头/麦克风采集 + 授权控制 | — | M1-T7·真机 | M2-T2·真机 | — | — | — | 真机 | environment.json、perf.json、screenshots/ | 系统隐私面板 + 应用 |
-| FR-006 | 格式协商、时间戳、缓冲边界、降级、指标 | M0-T6·CI(证据设施) | M1-T2·CI；M1-T3·CI | M2-T1·CI；M2-T4·真机 | M3-T3·CI | — | M5-T5·真机 | CI + 真机混合（逐格标注） | test-results.json、perf.json | — |
+| FR-006 | 格式协商、时间戳、缓冲边界、降级、指标 | M0-T6·CI(证据设施) | M1-T2·CI；M1-T3·CI(FrameEnvelope 契约+有界缓冲，传输无关)；M1-T4·CI+真机(候选帧承载 P1-3 矩阵) | M2-T1·CI；M2-T4·真机 | M3-T3·CI | — | M5-T5·真机 | CI + 真机混合（逐格标注） | test-results.json、perf.json | — |
 | FR-007 | 模型故障不拖垮设备与非 AI 通路 | — | M1-T6·真机(Runtime kill 预演) | — | M3-T7·真机(NFR-06 正式) | — | M5-T5·真机(复测) | 真机 | perf.json、故障注入日志 | 设备持续注册 + 应用表现 |
 | FR-008 | 安装/更新/卸载可靠清理 | — | M1-T6·真机(基础装卸) | — | — | — | M5-T2·真机；M5-T5·真机(NFR-09 全量) | 真机 | uninstall-verify 报告、test-results.json | 安装器 + 设备枚举 |
 | FR-009 | 采集/上传/生成/AI 参与可见可批准可撤销 | — | M1-T7·真机(采集权限) | M2-T5·真机(麦克风撤销) | M3-T7·真机(AI 授权撤销) | M4-T2·真机(采样授权)；M4-T3·CI(来源元数据) | M5-T1·真机(GUI)；M5-T5·真机(NFR-08 全量) | 真机 | security-checklist.md、网络/文件追踪、screenshots/ | OS 权限面板 + Control GUI |
