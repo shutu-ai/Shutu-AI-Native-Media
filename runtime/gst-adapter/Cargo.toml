@@ -9,6 +9,8 @@ description = "Thin GStreamer (gstreamer-rs) adapter shell. Owns all GStreamer s
 [dependencies]
 media-core = { path = "../media-core" }
 gstreamer = "0.25"
+gstreamer-app = "0.25"
+gstreamer-video = "0.25"
 
 [lints]
 workspace = true

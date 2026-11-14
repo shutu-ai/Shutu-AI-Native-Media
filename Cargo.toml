@@ -4,6 +4,7 @@ members = [
     "runtime/media-core",
     "runtime/gst-adapter",
     "runtime/device-bridge",
+    "tests/integration",
 ]
 
 [workspace.package]

@@ -1,9 +1,41 @@
-//! gst-adapter — GStreamer 封装空壳（M1-T1 骨架）。
+//! gst-adapter — GStreamer 适配层（M1-T2：进程内视频测试管线）。
 //!
-//! 边界（ADR-002 / R-10）：本 crate 只做初始化与环境验证；
-//! 不实现任何媒体管线（testsrc→appsink 属 M1-T2）、不做共享内存/管道承载。
-//!
-//! 所有 GStreamer 具体类型禁止泄漏到 media-core；反向依赖（media-core → 本 crate）禁止。
+//! 边界（ADR-002 / R-10 / M1-T2 字段 4）：
+//! - 本 crate 持有全部 GStreamer 具体类型；media-core 零 GStreamer/Windows 依赖
+//!   （反向依赖 media-core → 本 crate 禁止）。
+//! - M1-T2 范围 = 进程内 `videotestsrc→videoconvert→capsfilter→queue→appsink`
+//!   测试管线（生命周期 / 帧元数据 / 有界缓冲 / 指标）。
+//!   **这是 CI 级证据，不是 OS 虚拟摄像头验证**（AGENTS §4）。
+//! - 不做跨进程 IPC / 共享内存 Ring / Named Pipe 承载（M1-T3~T5；承载决策见 ADR-012）。
+
+pub mod caps;
+pub mod config;
+pub mod metrics;
+pub mod pipeline;
+
+pub use config::{PipelineConfig, TestPattern};
+pub use metrics::{
+    FrameInfo, MetricsSnapshot, PipelineMetrics, CLOCK_SOURCE_PTS, CLOCK_SOURCE_RECV,
+};
+pub use pipeline::{EosOutcome, LifecycleState, TestVideoPipeline};
+
+/// 适配层统一错误类型（消息即诊断；不 panic——clippy unwrap/expect 禁用下全程 `?` 传递）。
+#[derive(Debug, Clone)]
+pub struct AdapterError(pub String);
+
+impl std::fmt::Display for AdapterError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "gst-adapter error: {}", self.0)
+    }
+}
+
+impl std::error::Error for AdapterError {}
+
+impl From<String> for AdapterError {
+    fn from(msg: String) -> Self {
+        Self(msg)
+    }
+}
 
 /// 初始化 GStreamer 运行时（真实 DLL 加载验证入口）。
 ///
