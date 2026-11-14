@@ -1,0 +1,14 @@
+[package]
+name = "shutu-contract-tests"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+publish.workspace = true
+description = "G1 contract tests: FrameEnvelope v1 golden vectors + bounded frame-buffer semantics (M1-T3). Transport-neutral; cross-process transmission belongs to M1-T4/T5 and is NOT tested here."
+
+[dependencies]
+media-core = { path = "../../runtime/media-core" }
+device-bridge = { path = "../../runtime/device-bridge" }
+
+[lints]
+workspace = true

@@ -5,8 +5,19 @@
 //!    Named Pipe、帧承载待 M1-T4/T5 实测（P1-3，技术债 OPEN）后定案；
 //!    共享内存 broker 方案仅作备选且需新 ADR。
 //! 2. 不提前实现媒体 IPC 协议、Ring Buffer 或 Frame Server 客户端（R-10；
-//!    归属 M1-T3~T5）。
+//!    跨进程传输归属 M1-T4/T5）。M1-T3 新增 [`framebuffer`] 为**进程内、
+//!    传输无关**的有界帧缓冲抽象——它不是跨进程验证的替代品。
 //! 3. 不复制 M0-T4 PoC 的异步取消实现（P1-2 风险登记在案）。
+
+pub mod framebuffer;
+
+/// M1-T3 有界帧缓冲的公开再导出（传输无关；跨进程承载见 M1-T4/T5）。
+pub mod prelude {
+    pub use crate::framebuffer::{
+        BoundedFrameBuffer, BufferLevels, BufferLimits, FrameBuffer, OverfullPolicy, PushError,
+        ReadError,
+    };
+}
 
 /// 帧承载传输候选（架构枚举；**仅类型守卫，无任何实现**）。
 ///

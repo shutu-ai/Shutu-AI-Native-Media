@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
-  "sbom_version": "0.5",
-  "generated_at": "2026-11-14T08:59:42+02:00",
-  "task": "M1-T2",
-  "run_id": "G1-20261114-085728-657b",
+  "sbom_version": "0.6",
+  "generated_at": "2026-11-14T11:30:00+02:00",
+  "task": "M1-T3",
+  "run_id": "G1-20261114-104836-24c7",
   "note": "滚动仓库级 SBOM（AGENTS §6）：引入依赖即逐包登记；Cargo.lock 为闭包权威。MSRS pin（kstring 2.0.2，rustc 1.95.0）自 v0.4 保持。",
   "version_chain": [
     {
@@ -27,6 +27,12 @@
       "location": "artifacts/G1/G1-20261114-085728-657b/licensing-sbom.json",
       "entries_added": 8,
       "note": "gstreamer-app/video/base 及其 -sys 绑定族 + atomic_refcell + futures-sink（M1-T2 管线依赖）"
+    },
+    {
+      "sbom_version": "0.6",
+      "location": "artifacts/G1/G1-20261114-104836-24c7/licensing-sbom.json",
+      "entries_added": 0,
+      "note": "+0 第三方 +1 自有 crate（shutu-contract-tests）：M1-T3 金样本路线刻意零新第三方依赖（手写解析器替代 serde），避免 SBOM 膨胀"
     }
   ],
   "entries_v0_4": [
@@ -77,11 +83,11 @@
     }
   ],
   "transitive_closure": {
-    "authoritative_record": "Cargo.lock（68 包，随提交入库）",
-    "total_packages": 68,
-    "license_summary": "第三方 64 包全宽松许可（MIT / MIT OR Apache-2.0 / Apache-2.0 OR MIT / Unlicense OR MIT / Apache-2.0 WITH LLVM-exception / (MIT OR Apache-2.0) AND Unicode-3.0，cargo metadata 逐包核验 2026-11-14）；另 4 包为本仓库自有 workspace crate（publish=false，无第三方许可问题）。无 GPL/AGPL 包。",
-    "scan_method": "cargo metadata --format-version 1 逐包 license 字段提取 + git diff HEAD:Cargo.lock 精确比对新增 8 包（2026-11-14）；无 GPL/AGPL/未知许可证第三方包",
-    "delta_vs_v0_4": "+8 第三方包（gstreamer-app/-sys、gstreamer-video/-sys、gstreamer-base/-sys、atomic_refcell、futures-sink）+1 自有 crate（shutu-integration-tests）；移除 0"
+    "authoritative_record": "Cargo.lock（69 包，随提交入库）",
+    "total_packages": 69,
+    "license_summary": "第三方 64 包全宽松许可（MIT / MIT OR Apache-2.0 / Apache-2.0 OR MIT / Unlicense OR MIT / Apache-2.0 WITH LLVM-exception / (MIT OR Apache-2.0) AND Unicode-3.0，cargo metadata 逐包核验 2026-11-14 M1-T3 run）；另 5 包为本仓库自有 workspace crate（publish=false，无第三方许可问题）。无 GPL/AGPL 包。",
+    "scan_method": "cargo metadata --format-version 1 逐包 license 字段提取 + git diff HEAD:Cargo.lock 精确比对（2026-11-14 M1-T3：仅 +8 行自有 crate shutu-contract-tests 登记）；无 GPL/AGPL/未知许可证第三方包",
+    "delta_vs_v0_5": "+0 第三方包；+1 自有 crate（shutu-contract-tests，M1-T3 契约测试宿主）；移除 0"
   },
   "new_binaries": "无新增第三方二进制/模型权重/驱动（GStreamer SDK 为 0.1 已登记组件的既有运行时依赖）",
   "open_items": [
@@ -176,6 +182,18 @@
       "update_channel": "crates.io",
       "msrs": "1.36",
       "role": "传递依赖（gstreamer）"
+    }
+  ],
+  "entries_v0_6": [
+    {
+      "component": "shutu-contract-tests（本仓库自有 crate）",
+      "version": "0.1.0（workspace）",
+      "source": "tests/contract（本仓库）",
+      "license": "仓库版权所有（publish=false，不对外分发）",
+      "linking": "static（workspace path 依赖：media-core + device-bridge）",
+      "distribution_terms": "不适用（自有测试 crate，不随产品分发）",
+      "update_channel": "本仓库",
+      "role": "M1-T3 FrameEnvelope 金样本契约测试 + 有界帧缓冲契约测试"
     }
   ]
 }

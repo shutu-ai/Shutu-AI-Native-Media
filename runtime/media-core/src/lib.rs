@@ -6,10 +6,21 @@
 //! - 本 crate 只承载类型与纯函数骨架；图调度、帧传输协议（Ring Buffer / 管道）
 //!   属后续任务（M1-T2~T5），此处不实现（R-10 防过度设计）。
 
+pub mod envelope;
 pub mod graph;
 pub mod metrics;
 pub mod policy;
 pub mod session;
+
+/// FrameEnvelope v1 契约的公开再导出（M1-T3；契约文档
+/// `contracts/ipc/frame-envelope-v0.1-draft.md`，金样本
+/// `tests/contract/golden/frame_envelope_v1.txt`）。
+pub mod prelude {
+    pub use crate::envelope::{
+        error_kind, DecodeError, EnvelopePixelFormat, FrameEnvelope, PlaneLayout, HEADER_SIZE_V1,
+        MAGIC, MAX_PLANES,
+    };
+}
 
 /// Crate 级编译期健全性断言：骨架类型可构造、可比较（无隐藏依赖泄漏）。
 #[cfg(test)]

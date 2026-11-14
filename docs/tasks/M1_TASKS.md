@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | M1-T1 | Rust workspace 三 crate 骨架 + CI + threat-model 初版 + SBOM 机制 | G0=GO | — | 已完成（run G1-20261113-230809-9e2c） |
 | M1-T2 | `testsrc → processing → appsink` 基础视频图 | M1-T1 | — | 已完成（run G1-20261114-085728-657b） |
-| M1-T3 | 传输无关 FrameEnvelope、帧缓冲抽象与契约测试（2026-11-14 重定义，ADR-012 方案 B） | M1-T1 | — | 未开始 |
+| M1-T3 | 传输无关 FrameEnvelope、帧缓冲抽象与契约测试（2026-11-14 重定义，ADR-012 方案 B） | M1-T1 | — | 已完成（run G1-20261114-104836-24c7） |
 | M1-T4 | Named Pipe 控制通道 + 候选帧承载实测（版本化、ACL、身份校验；P1-1/P1-2/P1-3） | M1-T1, M1-T3 | — | 未开始 |
 | M1-T5 | VirtualCamera MediaSource 接入已验证的 Device Bridge 帧承载通道 | M0-T4, M1-T3, M1-T4 | — | 未开始 |
 | M1-T6 | 端到端验证 + 多消费者/用户切换/重复安装卸载 | M1-T2, M1-T3, M1-T4, M1-T5 | — | 未开始 |
@@ -149,7 +149,7 @@ M1-T1。参考输入：M1-T2 caps 决策记录（contracts/media/README.md NV12 
 **10. 应保留的测试证据**
 `test-results.json`（契约 + golden 原始输出）、`contracts/ipc/frame-envelope` 草案文档、`build.log`。
 
-**11. 状态**：未开始（2026-11-14 定义修订：共享内存 Ring → 传输无关 FrameEnvelope；依据 ADR-012 + 用户方案 B 指令）
+**11. 状态**：已完成（run G1-20261114-104836-24c7；CI 全绿 fmt/clippy/test **71/71**——media-core 25（envelope 18）+ device-bridge 12（framebuffer 10）+ shutu-contract-tests 12（金样本 4 VALID + 13 ERROR + 缓冲契约 7 类）+ gst-adapter 12 与 integration 10 保持；金样本独立 Python 推导（golden_gen.py 存档 run 内）；M1-T2 NV12 实测布局锚点断言钉死；契约文档 `contracts/ipc/frame-envelope-v0.1-draft.md` 入库；SBOM v0.6 **+0 第三方 +1 自有 crate**；SYS_CHANGE=[]；**零跨进程实现**（决策红线，decision.md §5 七条符合性）；判定 PASS）
 
 ---
 

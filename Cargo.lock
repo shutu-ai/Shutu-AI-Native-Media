@@ -482,6 +482,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "shutu-contract-tests"
+version = "0.1.0"
+dependencies = [
+ "device-bridge",
+ "media-core",
+]
+
+[[package]]
 name = "shutu-integration-tests"
 version = "0.1.0"
 dependencies = [
